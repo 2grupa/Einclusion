@@ -1,0 +1,32 @@
+<uml>
+   <greenVersion="30500"/>
+   <type>
+      <name="=Einclusion/src\/main\/java<org.einclusion.model{ObservationRating.java[ObservationRating"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="599"/>
+      <y="44"/>
+   </type>
+   <type>
+      <name="=Einclusion/src\/main\/java<org.einclusion.model{AssesmentRating.java[AssesmentRating"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="869"/>
+      <y="47"/>
+   </type>
+   <type>
+      <name="=Einclusion/src\/main\/java<org.einclusion.model{Assesment.java[Assesment"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="255"/>
+      <y="202"/>
+   </type>
+   <type>
+      <name="=Einclusion/src\/main\/java<org.einclusion.model{Observation.java[Observation"/>
+      <height="-1"/>
+      <width="-1"/>
+      <x="0"/>
+      <y="200"/>
+   </type>
+</uml>
+

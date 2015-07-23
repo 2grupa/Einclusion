@@ -22,7 +22,7 @@ public class Assessment implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false)
-	// nepiecieshamie mainigie M1 un M3 modeliem
+
 	Long id; // system generated
 	String phone; // phone number
 	String name;
@@ -46,6 +46,8 @@ public class Assessment implements Serializable {
 	Float pu; // predicted usage
 	Date submitDate; // date
 	Float puou; // combination of predicted usage and observed
+	
+	// nepiecieshamie mainigie M1 un M3 modeliem
 	Float kfa; // knowledge flow acceleration
 	Integer ou; // observed usage
 

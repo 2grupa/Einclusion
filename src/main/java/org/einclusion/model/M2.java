@@ -10,7 +10,7 @@ public class M2 {
   static final String REGRESSION_KEY = "M2-regression";
   static final Logger LOG = Logger.getLogger(M2.class);
   static final String QUERY_STRING = "SELECT SWL,  SAL, ELM, IWS, ELE, PUOU from assessment where "
-      + "SWL>0 and SAL>0 and ELM>0 and IWS>0 and ELE>0 and PUOU>0";
+      + "SWL>0 and SAL>0 and ELM>0 and IWS>0 and ELE>0 and PUOU>0";//sakanas no 1 nevis no 0 PUOU ja nav tuksh(1-7ieskaitot)
 
   static void getRegression() {
     // load data

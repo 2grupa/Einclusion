@@ -37,7 +37,6 @@ public class Einclusion {
 				// Calculate M3 data
 				M3.getRegression();
 
-				// Calculate prognosis
 			}
 
 		} catch (Throwable t) {

@@ -56,7 +56,8 @@
 		</dependency>
 	</dependencies>
 	<!-- Best solution for creating executable jar file! make jar file with 
-		database separately from one uber jar file, libraries included -->
+		database separately from one uber jar file, libraries included Run command: 
+		"mvn clean compile assembly:single" to build executable jar -->
 	<build>
 		<defaultGoal>install</defaultGoal>
 		<plugins>

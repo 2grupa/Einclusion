@@ -1,0 +1,12 @@
+﻿lubuntu:
+Got to directory: cd workspace/Einclusion/
+Run command: mvn clean
+Run command: mvn clean compile assembly:single
+Got to directory: cd target/
+Run command: java -jar Einclusion-1.0-SNAPSHOT-jar-with-dependencies
+
+If something wrong happens:
+Got to directory: cd workspace/Einclusion/
+Run command: mvn clean
+Check if target folder is deleted from Einclusion folder
+Or contact jar master Beatrise :D

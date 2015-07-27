@@ -1,0 +1,159 @@
+07-23 15:53:04 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TEST_DATA" not found; SQL statement:
+SELECT * FROM TEST_DATA [42102-176]
+07-23 15:53:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM Studenti [42102-176]
+07-23 15:56:53 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM STUDENTI [42102-176]
+07-23 15:57:23 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM STUDENTI [42102-176]
+07-23 15:57:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TEST_DATA" not found; SQL statement:
+SELECT * FROM TEST_DATA WHERE ? = ? [42102-176]
+07-23 15:58:44 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM studenti WHERE ? = ? [42102-176]
+07-23 16:29:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM studenti WHERE ? = ? [42102-176]
+07-23 16:30:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM studenti WHERE ? = ? [42102-176]
+07-23 16:30:55 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM studenti WHERE ? = ? [42102-176]
+07-23 16:32:10 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "STUDENTI" not found; SQL statement:
+SELECT * FROM studenti WHERE ? = ? [42102-176]
+07-23 16:53:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Column "SWL1" not found [42122-176]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:344)
+	at org.h2.message.DbException.get(DbException.java:178)
+	at org.h2.message.DbException.get(DbException.java:154)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3122)
+	at org.h2.jdbc.JdbcResultSet.get(JdbcResultSet.java:3210)
+	at org.h2.jdbc.JdbcResultSet.getDouble(JdbcResultSet.java:742)
+	at GUI.ImportPanel.actionPerformed(ImportPanel.java:377)
+	at javax.swing.AbstractButton.fireActionPerformed(Unknown Source)
+	at javax.swing.AbstractButton$Handler.actionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.fireActionPerformed(Unknown Source)
+	at javax.swing.DefaultButtonModel.setPressed(Unknown Source)
+	at javax.swing.plaf.basic.BasicButtonListener.mouseReleased(Unknown Source)
+	at java.awt.Component.processMouseEvent(Unknown Source)
+	at javax.swing.JComponent.processMouseEvent(Unknown Source)
+	at java.awt.Component.processEvent(Unknown Source)
+	at java.awt.Container.processEvent(Unknown Source)
+	at java.awt.Component.dispatchEventImpl(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.processMouseEvent(Unknown Source)
+	at java.awt.LightweightDispatcher.dispatchEvent(Unknown Source)
+	at java.awt.Container.dispatchEventImpl(Unknown Source)
+	at java.awt.Window.dispatchEventImpl(Unknown Source)
+	at java.awt.Component.dispatchEvent(Unknown Source)
+	at java.awt.EventQueue.dispatchEventImpl(Unknown Source)
+	at java.awt.EventQueue.access$300(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.awt.EventQueue$3.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.awt.EventQueue$4.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.security.ProtectionDomain$1.doIntersectionPrivilege(Unknown Source)
+	at java.awt.EventQueue.dispatchEvent(Unknown Source)
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+	at java.awt.EventDispatchThread.run(Unknown Source)
+07-24 12:43:08 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT NUMURS * FROM STUDENTI"; expected "., (, AS, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT NUMURS * FROM STUDENTI [42001-176]
+07-24 14:55:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Column "NUMURSOU" not found; SQL statement:
+SELECT NUMURSOU FROM STUDENTI [42122-176]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:344)
+	at org.h2.message.DbException.get(DbException.java:178)
+	at org.h2.message.DbException.get(DbException.java:154)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:148)
+	at org.h2.command.dml.Select.prepare(Select.java:831)
+	at org.h2.command.Parser.prepareCommand(Parser.java:248)
+	at org.h2.engine.Session.prepareLocal(Session.java:442)
+	at org.h2.engine.Session.prepareCommand(Session.java:384)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:75)
+	at GUI.ImportPanel$4.run(ImportPanel.java:481)
+07-24 15:00:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Column "NUMURSOU" not found [42122-176]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:344)
+	at org.h2.message.DbException.get(DbException.java:178)
+	at org.h2.message.DbException.get(DbException.java:154)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3122)
+	at org.h2.jdbc.JdbcResultSet.get(JdbcResultSet.java:3210)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:304)
+	at GUI.ImportPanel$4.run(ImportPanel.java:492)
+07-24 15:04:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT NUMURS OU AI[*] SS FROM STUDENTI"; SQL statement:
+SELECT NUMURS OU AI SS FROM STUDENTI [42000-176]
+07-24 15:20:48 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Column "37187654321" not found [42122-176]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:344)
+	at org.h2.message.DbException.get(DbException.java:178)
+	at org.h2.message.DbException.get(DbException.java:154)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3148)
+	at org.h2.jdbc.JdbcResultSet.get(JdbcResultSet.java:3210)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:304)
+	at GUI.ImportPanel$4.run(ImportPanel.java:495)
+07-24 15:35:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT NUMURS, OU, FROM STUDENTI"; expected "., (, AS, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT NUMURS, OU, FROM STUDENTI [42001-176]
+07-24 16:58:59 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Column "PJOTRS" not found; SQL statement:
+UPDATE STUDENTI SET NAME=Pjotrs WHERE NUMURS='37187654321' [42122-176]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:344)
+	at org.h2.message.DbException.get(DbException.java:178)
+	at org.h2.message.DbException.get(DbException.java:154)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:148)
+	at org.h2.command.dml.Update.prepare(Update.java:189)
+	at org.h2.command.Parser.prepareCommand(Parser.java:248)
+	at org.h2.engine.Session.prepareLocal(Session.java:442)
+	at org.h2.engine.Session.prepareCommand(Session.java:384)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1188)
+	at org.h2.jdbc.JdbcStatement.executeUpdateInternal(JdbcStatement.java:128)
+	at org.h2.jdbc.JdbcStatement.executeUpdate(JdbcStatement.java:117)
+	at GUI.ImportPanel$4.run(ImportPanel.java:511)
+07-24 17:20:26 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-24 17:21:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-24 17:52:44 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "MODELMANAGER" not found; SQL statement:
+SELECT * FROM MODELMANAGER [42102-176]
+07-24 18:07:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "MODELMANAGER" not found; SQL statement:
+SELECT * FROM MODELMANAGER [42102-176]
+07-24 18:14:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT FROM STUDENTI"; expected "., (, AS, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT FROM STUDENTI [42001-176]
+07-24 18:16:16 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT FROM STUDENTI"; expected "., (, AS, RIGHT, LEFT, FULL, INNER, JOIN, CROSS, NATURAL, ,, SELECT"; SQL statement:
+SELECT FROM STUDENTI [42001-176]
+07-27 10:03:45 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-27 10:04:54 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-27 10:05:57 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-27 10:07:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-27 10:07:47 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]
+07-27 10:08:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: The object is already closed [90007-176]

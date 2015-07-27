@@ -19,5 +19,4 @@ public class TestM2 {
 			ModelManager.closeModelManager();
 		}
 	}
-
 }

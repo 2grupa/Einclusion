@@ -65,7 +65,6 @@ public class TestAssessment {
 			int i = 0;
 			for (Assessment a : assessments) {
 				a.name = "Name" + Integer.toString(i);
-				a.modifyDate = new Date();
 				Assessment.setAssessment(a);
 				Assessment tmp = Assessment.getAssessment(a.id);
 				assertEquals(tmp.name, "Name" + Integer.toString(i));

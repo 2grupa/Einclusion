@@ -22,10 +22,9 @@ public class Assessment implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false)
-
 	Long id; // system generated
 	String phone; // phone number
-	String name;
+	String name; // student name surname
 	String topic; // study topic
 	Float swl1; // student wiling learn 1
 	Float swl2; // student wiling learn 2
@@ -45,14 +44,12 @@ public class Assessment implements Serializable {
 	Float sal; // student ability learn
 	Float pu; // predicted usage
 	Date submitDate; // date
+	Integer ou; // observed usage
 	Float puou; // combination of predicted usage and observed
-	
+
 	// nepiecieshamie mainigie M1 un M3 modeliem
 	Float kfa; // knowledge flow acceleration
-	Integer ou; // observed usage
 
-	@Version
-	Date modifyDate;
 
 	Assessment() {
 		super();
@@ -62,8 +59,7 @@ public class Assessment implements Serializable {
 			String topic, Float swl1, Float swl2, Float swl, Float ds1,
 			Float ds2, Float ds, Float sal, Float elm1, Float elm2, Float elm,
 			Float iws, Float ele1, Float ele2, Float ele, Float pu, Float kfa,
-			Float klbl, Float klal, Float puou, Integer ou, Date submitDate,
-			Date modifyDate) {
+			Float klbl, Float klal, Float puou, Integer ou, Date submitDate) {
 
 		this.id = id;
 		this.name = name;
@@ -90,7 +86,6 @@ public class Assessment implements Serializable {
 		this.puou = puou;
 		this.ou = ou;
 		this.submitDate = submitDate;
-		this.modifyDate = modifyDate;
 
 	}
 

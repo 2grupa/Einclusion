@@ -7,7 +7,8 @@ import weka.experiment.InstanceQuery;
 import static org.einclusion.model.ModelManager.*;
 
 public class InstanceManager {
-  private static final Logger LOG = Logger.getLogger(InstanceManager.class);
+	private static final Logger LOG = Logger.getLogger(InstanceManager.class);
+
 	static Instances retrieveModelInstances(String queryString) {
 		InstanceQuery instanceQuery;
 		try {

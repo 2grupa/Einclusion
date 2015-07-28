@@ -1,13 +1,17 @@
 package org.einclusion.model;
 
 
+
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -35,692 +41,773 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.ScrollPaneConstants;
-
-public class ImportPanel extends JPanel implements ActionListener {
+/**
+ * Panel for importing and updating database using xlsx and csv files
+ */
+public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 
-	public static final String FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	public  static final String FILE_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 	JFileChooser fileChooser;
 	FileNameExtensionFilter filter; // filter for jfilechooser
-	JButton chooseFile, openFile, writeToDatabase, updateDatabase, exampleFile;
-	JScrollPane scrollPane; // scrollpane for log
-	JTextArea log; // textarea for log (what the application is doing)
+	JButton chooseFile, openFile, writeToDatabase, updateDatabase, exampleFile, writeToXlsx, openDatabaseFile;
+	JScrollPane scrollPane;			// scrollpane for log°
+	JTextField fieldForInput;
+	static JTextArea log;					// textarea for log (what the application is doing)
+	File path;
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "org.h2.Driver";
-	static final String DB_URL = "jdbc:h2:data/Studenti";
-	// Database credentials
+	static final String DB_URL = "jdbc:h2:target/data/Studenti";
+	//  Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
 	static final String DB_TABLE_NAME = "STUDENTI";
-	static final String UNIQUE_ID = "NUMURS";
-	static final String[] Doubles = { "SWL", "SAL", "ELM", "IWS", "ELE",
-			"PUOU", "DS", "M2", "OU", "PU" };
+	static final String UNIQUE_ID = "NUMURS";				
+	static final String[] DOUBLES = {"SWL","SAL","ELM","IWS","ELE","PUOU","DS","M2","OU","PU"};
 
 	Statement stmt = null;
 	Connection conn = null;
-
-	public ImportPanel() {
+	
+	public ImportPanel(){
 
 		this.setLayout(null);
 
-		fileChooser = new JFileChooser(); // creates a new JfileChooser
-		fileChooser.setDialogTitle("Choose a file"); // sets jfilehooser name
-		fileChooser.setPreferredSize(new Dimension(600, 500)); // sets
-																// jfilechooser
-																// size
-		filter = new FileNameExtensionFilter("xlsx files", "xlsx"); // creates a
-																	// new
-																	// filter
-		fileChooser.addChoosableFileFilter(filter); // adds filter to dropdown
-		fileChooser.setFileFilter(filter); // sets filter as default
-		try {
-			File defaultDirectory = new File(
-					new File(System.getProperty("user.home")
-							+ System.getProperty("file.separator"))
-							.getCanonicalPath()); // creates new directory path
-			fileChooser.setCurrentDirectory(defaultDirectory); // sets
-																// jfilechooser
-																// starting
-																// directory
-		} catch (IOException e) {
-			System.out
-					.println("Exeption while setting directory for JfileChooser\n"
-							+ e.getMessage());
+		fileChooser = new JFileChooser();								// creates a new JfileChooser
+		fileChooser.setDialogTitle("Choose a file");					// sets jfilehooser name
+		fileChooser.setPreferredSize(new Dimension(600, 500));			// sets jfilechooser size
+		filter = new FileNameExtensionFilter("xlsx files", "xlsx");		// creates a new filter
+		fileChooser.addChoosableFileFilter(filter);						// adds filter to dropdown
+		fileChooser.setFileFilter(filter);								// sets filter as default
+		try{
+			File defaultDirectory = new File(new File(System.getProperty("user.home") + 
+					System.getProperty("file.separator")).getCanonicalPath() );			// creates new directory path
+			fileChooser.setCurrentDirectory(defaultDirectory);			// sets jfilechooser starting directory
+		}catch(IOException e){
+			System.out.println("Exeption while setting directory for JfileChooser\n"+e.getMessage());
 		}
-		fileChooser.setVisible(false); // fileChooser is not visible
-		this.add(fileChooser); // adds filechooser to jpanel
+		fileChooser.setVisible(false);				// fileChooser is not visible
+		this.add(fileChooser);						// adds filechooser to jpanel
 
-		chooseFile = new JButton("Choose a file"); // creates a new button for
-													// choosing file
-		chooseFile.setFont(new Font("Arial", Font.BOLD, 12)); // sets button
-																// font
-		chooseFile.addActionListener(this); // adds actionlistener to button
-		chooseFile.setToolTipText("Find a valid xlsx file"); // adds tooltip to
-																// button
-		chooseFile.setBounds(50, 10, 190, 30); // set location and size of
-												// button
-		this.add(chooseFile); // add button to jpanel
+		chooseFile = new JButton("Choose a file");				// creates a new button for choosing file
+		chooseFile.setFont(new Font("Arial", Font.BOLD, 12));	// sets button font
+		chooseFile.addActionListener(this);						// adds actionlistener to button
+		chooseFile.setToolTipText("Choose a valid xlsx file");	// adds tooltip to button
+		chooseFile.setBounds(50, 10, 190, 30);					// set location and size of button
+		this.add(chooseFile);									// add button to jpanel
 
-		JPanel panel = new JPanel(); // creates a new jpanel that will contain
-										// log
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // sets
-																	// top-down
-																	// box
-																	// layout to
-																	// jpanel
-		log = new JTextArea("No file selected"); // creates new jtextarea
-		log.setFont(new Font("Arial", Font.PLAIN, 12)); // sets font for
-														// jtextarea
-		log.setEditable(false); // jtextarea is not editable
-		log.setOpaque(false); // background of jtextarea will be opaque
-		log.setAlignmentX(JTextArea.LEFT_ALIGNMENT); // text will be aligned to
-														// the left
-		panel.setBorder(new EmptyBorder(10, 10, 10, 10)); // creates an empty
-															// border for
-															// spacing
-		panel.add(log); // adds jtextara to jpanel
+		JPanel panel = new JPanel();								// creates a new jpanel that will contain log
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));	// sets top-down box layout to jpanel
+		log = new JTextArea("No file selected");					// creates new jtextarea
+		log.setFont(new Font("Arial", Font.PLAIN, 12));				// sets font for jtextarea
+		log.setEditable(false);										// jtextarea is not editable
+		log.setOpaque(false);										// background of jtextarea will be opaque
+		log.setAlignmentX(JTextArea.LEFT_ALIGNMENT);				// text will be aligned to the left
+		panel.setBorder(new EmptyBorder(10,10,10,10));				// creates an empty border for spacing
+		panel.add(log);												// adds jtextara to jpanel
 
-		scrollPane = new JScrollPane(panel,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS); // create a
-																	// scrollpane
-																	// with
-																	// visible
-																	// scrollbars
-		scrollPane.setAlignmentX(JScrollPane.LEFT_ALIGNMENT); // sets left
-																// aligment to
-																// components
-		scrollPane.setBounds(370, 11, 360, 255); // sets location and size of
-													// jscrollpane
-		this.add(scrollPane); // adds jscrollpane to jpanel
-
-		openFile = new JButton("Open created file"); // creates a nw button for
-														// opening a file
-		openFile.setToolTipText("Opens the created .csv file with the default program for this file type"); // sets
-																											// tooltip
-																											// for
-																											// jbutton
-		openFile.setFont(new Font("Arial", Font.BOLD, 12)); // sets font for j
-															// button
-		openFile.setBounds(50, 60, 190, 30); // sets location and size of
-												// jbutton
-		openFile.addActionListener(this); // adds actionlistener to jbutton
-		openFile.setVisible(false); // sets jbutton to not visible
-		this.add(openFile); // adds jbutton to jpanel
+		scrollPane = new JScrollPane(panel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);	// create a scrollpane with visible scrollbars
+		scrollPane.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);		// sets left aligment to components
+		scrollPane.setBounds(370,11,360,255);						// sets location and size of jscrollpane
+		this.add(scrollPane);										// adds jscrollpane to jpanel
+		
+		openFile = new JButton("Open");		// creates a  nw button for opening a file
+		openFile.setToolTipText("<html>Opens the created .csv file with its default program<br>"+
+								"(to change this program right click on any .csv file<br>and choose"+
+								" the program you want to open it with)</html>"); // sets tooltip for jbutton
+		openFile.setFont(new Font("Arial", Font.BOLD, 12));	// sets font for j button
+		openFile.setBounds(250,10,110,30);					// sets location and size of jbutton
+		openFile.addActionListener(this);					// adds actionlistener to jbutton
+		openFile.setVisible(false);							// sets jbutton to not visible
+		this.add(openFile);									// adds jbutton to jpanel
 
 		writeToDatabase = new JButton("Write to database");
 		writeToDatabase.setFont(new Font("Arial", Font.BOLD, 12));
-		writeToDatabase.setBounds(50, 110, 190, 30);
+		writeToDatabase.setBounds(50,233,190,30);
 		writeToDatabase.addActionListener(this);
 		writeToDatabase.setVisible(false);
 		this.add(writeToDatabase);
 
-		updateDatabase = new JButton("Update database"); // creates a jbutton
-															// for updating
-															// database
-		updateDatabase
-				.setToolTipText("Choose a xlsx file from which to update database (see example first)"); // sets
-																											// tooltip
-																											// for
-																											// jbutton
-		updateDatabase.setFont(new Font("Arial", Font.BOLD, 12)); // sets font
-																	// for
-																	// jbutton
-		updateDatabase.setBounds(50, 160, 190, 30); // sets location and size of
-													// jbutton
-		updateDatabase.addActionListener(this); // adds actionlistener to
-												// jbutton
-		this.add(updateDatabase); // adds jbutton to jpanel
-
-		exampleFile = new JButton("Example"); // creates a jbutton for seeing
-												// example xlsx file
-		exampleFile.setToolTipText("Opens an example xlsx file"); // sets
-																	// tooltip
-																	// for
-																	// jbutton
-		exampleFile.setFont(new Font("Arial", Font.BOLD, 12)); // sets font for
-																// jbutton
-		exampleFile.setBounds(253, 160, 107, 30); // sets location and size of
-													// jbutton
-		exampleFile.addActionListener(this); // adds actionlistener to jbutton
-		this.add(exampleFile); // adds jbutton to janel
+		updateDatabase = new JButton("Update database");			// creates a jbutton for updating database
+		updateDatabase.setToolTipText("<html>Choose an xlsx file that will update database<br>"+
+									 " (see example first)</html>");// sets tooltip for jbutton
+		updateDatabase.setFont(new Font("Arial", Font.BOLD, 12));   // sets font for jbutton
+		updateDatabase.setBounds(50,50,190,30);						// sets location and size of jbutton
+		updateDatabase.addActionListener(this);						// adds actionlistener to jbutton
+		this.add(updateDatabase);									// adds jbutton to jpanel
+		
+		exampleFile = new JButton("Example");						// creates a jbutton for seeing example xlsx file
+		exampleFile.setToolTipText("Opens an example xlsx file");	// sets tooltip for jbutton
+		exampleFile.setFont(new Font("Arial", Font.BOLD, 12));		// sets font for jbutton
+		exampleFile.setBounds(250,50,110,30);						// sets location and size of jbutton
+		exampleFile.addActionListener(this);						// adds actionlistener to jbutton
+		this.add(exampleFile);										// adds jbutton to janel
+		
+		fieldForInput = new JTextField("Students");					// creates a jbutton for user input
+		fieldForInput.setToolTipText("Enter a file name without the extension");
+		fieldForInput.setFont(new Font("Arial", Font.BOLD, 12));	// sets fonr for jTextField
+		fieldForInput.setBounds(50,90,190,30);						// sets location size of jbutton
+		fieldForInput.addKeyListener(this); 						// add keylistener to jtextfield
+		this.add(fieldForInput);									// adds jbutton to jpanel
+		
+		writeToXlsx = new JButton("Write to xlsx");					// creates a jbutton for seeing example xlsx file
+		writeToXlsx.setToolTipText("Writes database contents to xlsx file");	// sets tooltip for jbutton
+		writeToXlsx.setFont(new Font("Arial", Font.BOLD, 12));		// sets font for jbutton
+		writeToXlsx.setBounds(50,130,190,30);						// sets location and size of jbutton
+		writeToXlsx.addActionListener(this);						// adds actionlistener to jbutton
+		this.add(writeToXlsx);										// adds jbutton to janel
+		
+		openDatabaseFile = new JButton("Open");						// creates a jbutton for user input
+		openDatabaseFile.setToolTipText("<html>Opens the created .xlsx file with its default program<br>"+
+										"(to change this program right click on any .xlsx file<br>and choose"+
+										" the program you want to open it with)</html>"); // sets tooltip for jbutton
+		openDatabaseFile.setFont(new Font("Arial", Font.BOLD, 12));	// sets fonr for jTextField
+		openDatabaseFile.setBounds(250,130,110,30);					// sets location size of jbutton
+		openDatabaseFile.setVisible(false);
+		openDatabaseFile.addActionListener(this); 						// add keylistener to jtextfield
+		this.add(openDatabaseFile);									// adds jbutton to jpanel
 	}
 
-	@SuppressWarnings("resource")
-	static void convert(File inputFile, File outputFile) {
+	
+	static void openFile(File file){
+		try
+		{
+			if(Desktop.isDesktopSupported()){			// if desktop class is suported on this platform
+				Desktop desktop = Desktop.getDesktop(); // gets desktop instance of current broswer context
+				if(file.exists()) desktop.open(file);	// if file exists open it with its default program
+			}
+		}catch( IOException ioe){
+			System.out.println("Exception while opening file\n"+ioe.getMessage());
+		}
+	}
+	/**
+	 * Function for creating a csv file from a xlsx file
+	 * @param inputFile - file path to a xlsx file
+	 * @param outputFile - file path to a csv file
+	 */
+	static void xlsxToCsv(File inputFile, File outputFile) {
 		// For storing data into CSV files
 		StringBuffer data = new StringBuffer();
-
-		try {
+		try {			
 			FileOutputStream fos = new FileOutputStream(outputFile);
 			// Get the workbook object for XLSX file
-			XSSFWorkbook wBook = new XSSFWorkbook(
-					new FileInputStream(inputFile));
+			@SuppressWarnings("resource")
+			XSSFWorkbook wBook = new XSSFWorkbook(new FileInputStream(inputFile));
 			// Get first sheet from the workbook
-			XSSFSheet sheet = wBook.getSheetAt(1); // CHOOSE WHICH EXCEL SHEET
-
+			XSSFSheet sheet = null;
 			// "Iterate" through each rows from first sheet
+			  // for each sheet in the workbook
+			boolean found = false;
+            for (int i = 0; i < wBook.getNumberOfSheets(); i++) {
+                if(wBook.getSheetName(i).equals("detailed")){
+                	sheet = wBook.getSheetAt(i);
+                	found = true;
+                	break;
+                }
+            }
+            if( found == false )
+            	log.append("\"detailed\" sheet not found\n");
+            else{
+			//Values to skip and not write to the CSV file which will then be sent to database
+			int skipLietotajvards = 1;	//Ignores Lietotajvards column
+			int skipComments = 16;	//Jusu komentars column number set manually so it can be skipped
+			int skipKursaID = 18;	//Kursa ID column number set manually so it can be skipped
+			int skipKurss = 19;		//Kurss column number set manually so it can be skipped
+			int date = skipKursaID -1;	//Assumes date column is the column just before Kursa ID column
 
-			int skipComments = -1;
-			int skipKursaID = 18;
-			int skipKurss = 19;
-			int date = skipKursaID - 1;
+			String dateString; //will hold the date cell as written in the excel file
+			
+			for(Row row : sheet){	 //while there are rows
+				if(row.getRowNum()!=1){ 	//don't need to look at the second row
+					for(int cn = 0; cn < row.getLastCellNum(); cn++) {		//while there are cells in the row
+						if(cn != skipKursaID && cn != skipKurss && cn != skipComments && cn != skipLietotajvards){		//if the current cell is one we need
+							Cell cell = row.getCell(cn, Row.CREATE_NULL_AS_BLANK); 		//takes the cell even if it's empty
 
-			String dateString;
-
-			for (Row row : sheet) {
-				if (row.getRowNum() != 1 && row.getRowNum() != 2) {
-					for (int cn = 0; cn < row.getLastCellNum(); cn++) {
-						if (cn != skipKursaID && cn != skipKurss
-								&& cn != skipComments) {
-							Cell cell = row.getCell(cn,
-									Row.CREATE_NULL_AS_BLANK);
-
-							switch (cell.getCellType()) {
-
+							switch (cell.getCellType()) { //determines the type of the cell
 							case Cell.CELL_TYPE_BOOLEAN:
-								data.append(cell.getBooleanCellValue() + "|");
+								data.append(cell.getBooleanCellValue() + ",");
 								break;
 							case Cell.CELL_TYPE_NUMERIC:
-								data.append(cell.getNumericCellValue() + "|");
+								data.append(cell.getNumericCellValue() + ",");
 								break;
 							case Cell.CELL_TYPE_STRING:
-								if (cell.getStringCellValue().equals(
-										"J�su koment�ri")) {
-									skipComments = cn;
-								} else if (cn == date) {
+								if(cn == date){
 									dateString = cell.getStringCellValue();
 									String dateFinal = new String();
 									int dotCount = 0;
 									String day = new String();
-									for (int i = 0; i < dateString.length(); i++) {
-										char c = dateString.charAt(i);
-										if (dotCount < 2) {
-											if (c >= 48 && c <= 57
-													&& dotCount != 1) {
+									for (int i = 0; i < dateString.length(); i++){
+										char c = dateString.charAt(i);  
+										if(dotCount < 2){
+											if(c >= 48 && c <=57 && dotCount != 1){
 												dateFinal += c;
-											} else if (c >= 48 && c <= 57) {
+											}
+											else if(c >= 48 && c <=57){
 												day += c;
-											} else if (c == 46 && dotCount != 3) {
+											}
+											else if(c == 46){
 												dotCount++;
 											}
-										} else if (dateString
-												.contains("January")) {
+										}
+										else if(dateString.contains("January")){
 											dateFinal += "-1-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("February")) {
+										}
+										else if(dateString.contains("February")){
 											dateFinal += "-2-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString.contains("March")) {
+										}
+										else if(dateString.contains("March")){
 											dateFinal += "-3-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString.contains("April")) {
+										}
+										else if(dateString.contains("April")){
 											dateFinal += "-4-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString.contains("May")) {
+										}
+										else if(dateString.contains("May")){
 											dateFinal += "-5-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString.contains("June")) {
+										}
+										else if(dateString.contains("June")){
 											dateFinal += "-6-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString.contains("July")) {
+										}
+										else if(dateString.contains("July")){
 											dateFinal += "-7-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("August")) {
+										}
+										else if(dateString.contains("August")){
 											dateFinal += "-8-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("September")) {
+										}
+										else if(dateString.contains("September")){
 											dateFinal += "-9-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("October")) {
+										}
+										else if(dateString.contains("October")){
 											dateFinal += "-10-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("November")) {
+										}
+										else if(dateString.contains("November")){
 											dateFinal += "-11-";
 											dateFinal += day;
-											dotCount = 0;
 											break;
-										} else if (dateString
-												.contains("December")) {
+										}
+										else if(dateString.contains("December")){
 											dateFinal += "-12-";
 											dateFinal += day;
-											dotCount = 0;
+											break;
+										}
+										else{
+											dateFinal += "-00-";
+											dateFinal += day;
 											break;
 										}
 									}
-									if (row.getRowNum() != 0)
-										data.append(dateFinal + "|");
-								} else if (row.getRowNum() != 0)
-									data.append(cell.getStringCellValue() + "|");
+									dotCount = 0;
+									if(row.getRowNum() != 0)
+										data.append(dateFinal + ",");
+								}
+								else if (row.getRowNum() != 0)
+									data.append(cell.getStringCellValue() + ",");
 								break;
 							case Cell.CELL_TYPE_BLANK:
-								data.append("");
-								break;
+								if(row.getRowNum() > 1){
+									data.append("No data" + ",");
+									break;
+								}
+								else
+									break;
 							default:
-								data.append(cell + "|");
+								data.append(cell + ",");
 							}
 						}
 					}
-					if (row.getRowNum() != 0)
-						data.append("\r\n"); // EXCEL RINDAS BEIGAS
+					if(row.getRowNum() != 0)
+						data.append("\r\n"); //EXCEL RINDAS BEIGAS
 				}
 			}
-
 			fos.write(data.toString().getBytes());
 			fos.close();
-		} catch (Exception e) {
-			System.out.println("Exception while converting xlsx to csv\n"
-					+ e.getMessage());
+			log.append("Created file: "+outputFile.getName()+"\n");
+            }
+		} catch (Exception ioe) {
+			ioe.printStackTrace();
 		}
+		
 	}
-
-	static void readExcelFile(File readFrom,
-			ArrayList<ArrayList<String>> excelData) {
+	/**
+	 * Function for reading an excel file and saving its contents
+	 * @param readFrom - path to a xlsx file
+	 * @param excelData - ArrayList(ArrayList(String)) an ArrayList that contains ArrayLists of String values
+	 */
+	// Reads an excel file and saves it in an arraylist
+	static void readExcelFile( File readFrom, ArrayList<ArrayList<String>> excelData ){
 		try {
-			FileInputStream fis = new FileInputStream(readFrom);// create the
-																// input stream
-																// from the xlsx
-																// file
+			FileInputStream fis = new FileInputStream(readFrom);	// create the input stream from the xlsx file
 			@SuppressWarnings("resource")
-			Workbook workbook = new XSSFWorkbook(fis); // create Workbook
-														// instance for xlsx
-														// file input stream
-			Sheet sheet = workbook.getSheetAt(0); // get the 1st sheet from the
-													// workbook
-			Iterator<Row> rowIterator = sheet.iterator(); // every sheet has
-															// rows, iterate
-															// over them
-			boolean firstIteration = true; // for reading columns names
-			while (rowIterator.hasNext()) { // while there are rows to read from
-				ArrayList<String> rows = new ArrayList<String>(); // arraylist
-																	// for
-																	// saving
-																	// one row
-				String uniqueID = "";
-				String stringToChange = "";
-				String columnName = "";
+			Workbook workbook = new XSSFWorkbook(fis);				// create Workbook instance for xlsx file input stream
+			Sheet sheet = workbook.getSheetAt(0);					// get the 1st sheet from the workbook
+			Iterator<Row> rowIterator = sheet.iterator();			// every sheet has rows, iterate over them
+			boolean firstIteration = true;							// for reading columns names
+			while (rowIterator.hasNext()) {							// while there are rows to read from
+				ArrayList<String> rows = new ArrayList<String>();	// arraylist for saving one row
+				String columnName = null;
+				String cellValue = null;
 
-				// Get the row object
-				Row row = rowIterator.next();
-
-				// Every row has columns, get the column iterator and iterate
-				// over them
-				Iterator<Cell> cellIterator = row.cellIterator();
+				Row row = rowIterator.next();						// get the row object
+				Iterator<Cell> cellIterator = row.cellIterator();	//every row has columns, get the column iterator and iterate over them
 				while (cellIterator.hasNext()) {
-					// Get the Cell object
-					Cell cell = cellIterator.next();
-
-					// check the cell type and process accordingly
-					switch (cell.getCellType()) {
-					case Cell.CELL_TYPE_STRING: {
-						if (firstIteration == true) {
-							columnName = cell.getStringCellValue().trim();
-							rows.add(columnName);
-						} else {
-							uniqueID = cell.getStringCellValue().trim();
-							rows.add(uniqueID);
+					Cell cell = cellIterator.next();			// get the Cell object
+					switch(cell.getCellType()){					// check the cell type
+					case Cell.CELL_TYPE_STRING:					// if celltype is string
+					{
+						if( firstIteration == true){						// if firstiteration
+							columnName = cell.getStringCellValue().trim();	// get columnname
+							rows.add(columnName);							// add to arraylist
+						}
+						else{
+							cellValue = cell.getStringCellValue().trim();	// get cellValue
+							rows.add(cellValue);							// add to arraylist
 						}
 						break;
 					}
-					case Cell.CELL_TYPE_NUMERIC: {
-						long number = (long) cell.getNumericCellValue();
-						stringToChange = String.valueOf(number);
-						rows.add(stringToChange);
+					case Cell.CELL_TYPE_NUMERIC:				// if celltype is numeric
+					{
+						long number = (long) cell.getNumericCellValue();	// cast value to long
+						cellValue = String.valueOf(number);					// create string from long
+						rows.add(cellValue);								// add to arraylist
 						break;
 					}
 					}
-				} // end of cell iterator
-				firstIteration = false;
-				if (rows.size() > 0) {
-					excelData.add(rows);
+				} //end of cell iterator
+				firstIteration = false;							// after firstiteration is false
+				if(rows.size() > 0){							// if arraylist of one row is not empty
+					excelData.add(rows);						// add it to arraylist that contains all rows
 				}
-			} // end of rows iterator
+			} //end of rows iterator
 
-		} catch (IOException e) {
-			System.out.println("Exception while reading from xlsx file\n"
-					+ e.getMessage());
+		}
+		catch (IOException e) {
+			System.out.println("Exception while reading from xlsx file\n"+e.getMessage());
+		}
+	}
+	
+	static void writeExcelFile(File file){
+
+		XSSFWorkbook wb = new XSSFWorkbook();			// create Workbook instance for xlsx file
+		XSSFSheet sheet = wb.createSheet("detailed");	// create Sheet for xlsx file
+
+		Statement stmt = null;
+		Connection conn = null;
+		try{
+			Class.forName(JDBC_DRIVER);								// jdbc driver name
+			log.append("Connecting to database... \n");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);	// establsih connection to database
+			log.append("Connected to database successfully \n");
+			conn.setAutoCommit(false);								// sets autocommit to false
+			//, NAME, TEMA, SWL, SAL, ELM, IWS, ELE, PUOU, IZPILDITS, DS, M2, OU, PU
+			String sql = "SELECT NUMURS, NAME, TEMA, SWL, SAL, ELM, IWS, ELE, PUOU, IZPILDITS, DS, M2, OU, PU FROM "+DB_TABLE_NAME;
+			stmt = conn.createStatement();				// creates a new statement object
+			ResultSet rs = stmt.executeQuery(sql);		// a table of data that is obtained by executing a sql statement
+			ResultSetMetaData rsmd = rs.getMetaData();
+			XSSFRow row = sheet.createRow(1);
+			XSSFCell cell;
+			for(int i = 0; i < rsmd.getColumnCount(); i++ ){
+				cell = row.createCell(i);
+				cell.setCellValue(rsmd.getColumnName(i+1));
+			}
+			conn.commit();								// makes changes to datbase permanent
+
+			int rowCounter = 2;
+			while( rs.next() ){
+				String numurs = rs.getString("NUMURS");
+				if( numurs != null ){
+					row = sheet.createRow(rowCounter);
+					int cellCounter = 0;
+					System.out.print(numurs+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(numurs);
+					cellCounter++;
+
+					String name = rs.getString("NAME");
+					System.out.print(name+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(name);
+					cellCounter++;
+
+					String tema = rs.getString("TEMA");
+					System.out.print(tema+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(tema);
+					cellCounter++;
+
+					Double swl = rs.getDouble("SWL");
+					System.out.print(swl+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(swl);
+					cellCounter++;
+
+					Double sal = rs.getDouble("SAL");
+					System.out.print(sal+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(sal);
+					cellCounter++;
+
+					Double elm = rs.getDouble("ELM");
+					System.out.print(elm+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(elm);
+					cellCounter++;
+
+					Double iws = rs.getDouble("IWS");
+					System.out.print(iws+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(iws);
+					cellCounter++;
+
+					Double ele = rs.getDouble("ELE");
+					System.out.print(ele+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(ele);
+					cellCounter++;
+
+					Double puou = rs.getDouble("PUOU");
+					System.out.print(puou+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(puou);
+					cellCounter++;
+
+					Timestamp timeStamp = rs.getTimestamp("IZPILDITS");
+					System.out.print(timeStamp+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(timeStamp.toString());
+					cellCounter++;
+
+					Double ds = rs.getDouble("DS");
+					System.out.print(ds+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(ds);
+					cellCounter++;
+
+					Double m2 = rs.getDouble("M2");
+					System.out.print(m2+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(m2);
+					cellCounter++;
+
+					Double ou = rs.getDouble("OU");
+					System.out.print(ou+" ");
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(ou);
+					cellCounter++;
+
+					Double pu = rs.getDouble("PU");
+					System.out.println(pu);
+					cell = row.createCell(cellCounter);
+					cell.setCellValue(pu);
+					cellCounter++;
+
+					rowCounter++;
+				}
+			}
+
+		} catch( ClassNotFoundException clnfe ){
+			System.out.println(clnfe.getMessage());
+		}
+		catch( SQLException sqle ){
+			System.out.println(sqle.getMessage());
+		}
+		finally{
+			try{
+				if( stmt != null ){
+					stmt.close();
+				}
+				if( conn != null ){
+					conn.close();
+				}
+			} catch( SQLException sqle ){
+				System.out.println(sqle.getMessage());
+			}
+		}
+
+		try
+		{
+			FileOutputStream fileOut = new FileOutputStream(file);
+
+			//write this workbook to an Outputstream.
+			wb.write(fileOut);
+			fileOut.flush();
+			fileOut.close();
+		}
+		catch( FileNotFoundException fnfe){
+			System.out.println("File Not Found\n"+ fnfe.getMessage());
+		}
+		catch( IOException ioe ){
+			System.out.println("Input output exception\n"+ ioe.getMessage());
+		}
+
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Action details = fileChooser.getActionMap().get("viewTypeDetails");	// uses Action to set jfilechooser view to details
+		details.actionPerformed(e);	// when an actionevent occurs
+		if( e.getSource().equals(chooseFile) ){			// choosefile button is pressed
+			fileChooser.setVisible(true);				// sets jfilechooser to visible
+			int status = fileChooser.showDialog(null, "Choose File");	// gets state of jfilechooser
+			if( status == JFileChooser.APPROVE_OPTION ){	// if open is pressed in jfilechooser
+				new Thread() { 								// creates a new thread so processes execute consecutively
+					public void run() {						// creates run method for thread
+						try{
+							final File file = fileChooser.getSelectedFile();		// gets selected files path
+							String fileType = Files.probeContentType(file.toPath());// gets file type
+							if( FILE_TYPE.equals(fileType) ){						// if file type is xlsx
+								log.setText("Selected file: "+file.getName()+"\n");
+								String fileName = file.getName();					// gets files name
+								fileName = fileName.substring(0, fileName.indexOf(".")) + ".csv";	// changes extension to .csv
+								File currentDirectory = new File(fileName);			// sets files location to current directory (directory project is in)
+
+								log.append("Converting ...\n");
+								long start = System.nanoTime();						// gets time before executing function
+								xlsxToCsv(file, currentDirectory);
+								long end = System.nanoTime();						// gets time after executing function
+								long elapsedTime = end - start;						// gets execution time of function
+								double seconds = (double)elapsedTime / 1000000000.0;// converts nanoseconds to seconds
+								log.append("Execution time: "+seconds);
+								openFile.setVisible(true);							// sets openfile button to visible
+								writeToDatabase.setVisible(true);					// sets write to database button visible
+							}
+							else{
+								JOptionPane.showMessageDialog( null, "Invalid file type", "Warning !", JOptionPane.INFORMATION_MESSAGE );
+							}
+						} catch (IOException ioe) {
+							System.out.println("Exception while determening file type\n" + ioe.getMessage());
+						} 
+					}
+				}.start();	// starts thread
+			}
+			else if( status == JFileChooser.ERROR_OPTION ){
+				JOptionPane.showMessageDialog( null, "File chooser error", "Warning !", JOptionPane.INFORMATION_MESSAGE );
+			}
+		}
+		else if( e.getSource().equals(openFile) ){			// if openfile button is pressed
+				File file = fileChooser.getSelectedFile();	// gets selected files path
+				String fileName = file.getName();			// gets selected files name
+				fileName = fileName.substring(0, fileName.indexOf(".")) + ".csv";	// changes files extension to .csv
+				file = new File(fileName);					// creates new path in working directory
+				openFile(file);								// function that opens file with its default program
+		}
+		else if( e.getSource().equals(updateDatabase) ){	// if updatedatabase button is pressed
+			fileChooser.setVisible(true);					// set jfilechooser to visible
+			int status = fileChooser.showDialog(null, "Choose File");	// gets state of jfilechooser
+			if( status == JFileChooser.APPROVE_OPTION ){				// if open is pressed in jfilechooser
+				final File file = fileChooser.getSelectedFile();		// gets selected files path
+				new Thread() { 		// creates a new thread so processes execute consecutively
+					public void run() {		// creates run method for thread
+						try {
+							String fileType = Files.probeContentType(file.toPath());	// gets chosen file type
+							if( FILE_TYPE.equals(fileType) ){							// if fileType is xlsx
+								log.setText("Selected file: "+file.getName()+"\n");
+								try {
+									// creates an arraylist of all rows that contains arraylists of one row
+									ArrayList<ArrayList<String>> excelData = new ArrayList<ArrayList<String>>();
+									log.append("Reading file... \n");
+									readExcelFile(file, excelData);	// reads excelfile and saves it to arraylist
+									log.append("File read successfully \n");
+									for( ArrayList<String> s : excelData ){
+										System.out.println(s);
+									}
+
+									long start = System.nanoTime();	// get system time before opening database
+
+									Class.forName(JDBC_DRIVER);		// jdbc driver name							
+									log.append("Connecting to database... \n");
+									conn = DriverManager.getConnection(DB_URL, USER, PASS);	// establsih connection to database
+									conn.setAutoCommit(false);		// sets autocommit to false
+									log.append("Connected to database successfully \n");
+
+									StringBuilder sb = new StringBuilder();				// creates a stringbuilder for column names
+									for(int i = 0; i < excelData.get(0).size(); i++){	// repeats first row size times
+										if( i == excelData.get(0).size()-1){			// if last iteration
+											sb.append(excelData.get(0).get(i)+" ");		// add column names to string builder
+										}
+										else{											// if not last iteration
+											sb.append(excelData.get(0).get(i)+", ");	// add column names to string builder
+										}
+									}
+									String columnNames = new String(sb);				// make string with stringbuilder contents
+									System.out.println(columnNames);
+									String sql = "SELECT "+ columnNames +"FROM "+DB_TABLE_NAME;	// make sql statement
+									System.out.println(sql);
+
+									stmt = conn.createStatement();				// creates a new statement object
+									ResultSet rs = stmt.executeQuery(sql);		// a table of data that is obtained by executing a sql statement
+									conn.commit();								// makes changes to datbase permanent
+
+									System.out.println("exceldata size: "+excelData.size()); 	// amount of rows
+									while( rs.next() ){											// while table has contents
+										String number = rs.getString(excelData.get(0).get(0));  // columnname ( excelData.get(0).get(i) )
+										if(number != null){										// if number is initialized
+											for(int i= 0; i < excelData.size(); i++){			// amount of rows times
+												if( number.equals(excelData.get(i).get(0))){	// number ( excelData.get(j).get(0)	)					            			
+													for(int j = 1; j < excelData.get(0).size(); j++ ){	// (amount of columns - 1) times
+														boolean isDouble = false;						// check if value is double
+														for(String columnName : DOUBLES){					// iterator for DOUBLES array
+															if(excelData.get(0).get(j).equals(columnName)){ // if column name matches one of DOUBLES array values
+																isDouble = true;							// column contains double values
+																break;										// stop for cycle
+															}
+														}
+														if( isDouble == true ){								// if column contains double values
+																											// if number is in interval [1-5]
+															if( Double.parseDouble(excelData.get(i).get(j)) >= 1 && Double.parseDouble(excelData.get(i).get(j)) <= 5 ){
+																System.out.println(excelData.get(i).get(j));
+																											// creates sql statement fot inserting value into database
+																String statement = "UPDATE "+DB_TABLE_NAME+" SET "+excelData.get(0).get(j)+
+																		"='"+excelData.get(i).get(j)+"' WHERE "+UNIQUE_ID+
+																		"='"+number+"'";
+																stmt = conn.createStatement();				// creates a new statement object
+																stmt.executeUpdate(statement);				// executes statement
+																System.out.println(statement);
+																conn.commit();								// commits changes
+															} 
+															else{
+																log.append("At: ["+number+"] value: ["+excelData.get(i).get(j)+"] Not in interval [1-5]\n");
+															} 
+														}
+														else{
+															String statement = "UPDATE "+DB_TABLE_NAME+" SET "+excelData.get(0).get(j)+
+																	"='"+excelData.get(i).get(j)+"' WHERE "+UNIQUE_ID+
+																	"='"+number+"'";
+															stmt = conn.createStatement();
+															System.out.println(statement);
+															stmt.executeUpdate(statement);
+															conn.commit();
+														}
+													}// closes for statement ( amount of columns - 1 ) times
+												}// closes if statment ( number equals )
+											}// closes for statement ( amount of row ) times
+										}// closes if statement ( number is not null )
+									}// closes while statement ( table has contents )
+									long end = System.nanoTime(); // get system time after actions with database are finished
+									long elapsedTime = end - start; // gets elapsed time in nanoseconds
+									double seconds = (double)elapsedTime / 1000000000.0; // converts nanoseconds to seconds
+									log.append("Execution time: "+seconds+"\n");
+								}catch (SQLException sqle) { //Handle errors for JDBC
+									System.out.println("SQL exception\n"+sqle.getMessage());
+								} catch (Exception e) { 	//Handle errors for Class.forName
+									System.out.println("Unexpected exception\n"+e.getMessage());
+								} finally {
+									try {
+										if(stmt!=null){
+											stmt.close();
+										}
+										if (conn!=null)
+											conn.close();
+									} catch (SQLException sqle) {
+										System.out.println("SQL exception\n"+sqle.getMessage());
+									}
+								}
+							}
+							else{
+								JOptionPane.showMessageDialog( null, "Invalid file type", "Warning !", JOptionPane.INFORMATION_MESSAGE );
+							}
+						} catch (IOException ioe) {
+							System.out.println("Exception while determening file type\n" + ioe.getMessage());
+						}
+					}
+				}.start(); // starts thread
+			}
+			else if( status == JFileChooser.ERROR_OPTION ){
+				JOptionPane.showMessageDialog( null, "File chooser error", "Warning !", JOptionPane.INFORMATION_MESSAGE );
+			}
+		}
+		else if(e.getSource().equals(exampleFile)){
+				File file = new File("resources/example.xlsx");	// creates file path to example.xlsx file
+				openFile(file);									// function that opens file with its default program
+		}
+		else if(e.getSource().equals(writeToXlsx) ){
+			new Thread(){
+				public void run() {	
+					String extension;
+					if( fieldForInput.getText().contains(".") ){
+						String fileName = fieldForInput.getText();
+						extension = fileName.substring(fileName.indexOf("."), fileName.length());
+						if( extension.equals(".xlsx") ){
+							File file = new File(fileName);
+							path = file;
+							log.setText("Writing to "+fileName+" file...\n");
+							long start = System.nanoTime();						// gets time before executing function
+							writeExcelFile(file);
+							long end = System.nanoTime();						// gets time after executing function
+							long elapsedTime = end - start;						// gets execution time of function
+							double seconds = (double)elapsedTime / 1000000000.0;// converts nanoseconds to seconds
+							log.append(fileName+" file created\n");
+							log.append("Execution time: "+seconds+"\n");
+							openDatabaseFile.setVisible(true);
+						}
+					}
+					else if( fieldForInput.getText().length() > 0 ){
+						String fileName = fieldForInput.getText();
+						File file = new File(fileName+".xlsx");
+						path = file;
+						log.setText("Writing to "+fileName+" file...\n");
+						long start = System.nanoTime();						// gets time before executing function
+						writeExcelFile(file);
+						long end = System.nanoTime();						// gets time after executing function
+						long elapsedTime = end - start;						// gets execution time of function
+						double seconds = (double)elapsedTime / 1000000000.0;// converts nanoseconds to seconds
+						log.append(fileName+" file created\n");
+						log.append("Execution time: "+seconds+"\n");
+						openDatabaseFile.setVisible(true);
+					}
+				}
+			}.start();
+		}
+		else if( e.getSource().equals(openDatabaseFile) ){
+			openFile(path);
+		}
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getSource().equals(fieldForInput)){
+			String line;
+			if( e.getKeyCode()!=KeyEvent.VK_DELETE && e.getKeyCode()!=KeyEvent.VK_BACK_SPACE && e.getKeyCode()!=KeyEvent.VK_CONTROL
+					&& e.getKeyCode()!=KeyEvent.VK_SHIFT && e.getKeyCode()!=KeyEvent.VK_CAPS_LOCK ){ // ignores backspace, delete, shift, caps lock, control
+				if( !((e.getKeyChar()<=122 && e.getKeyChar()>=97) || (e.getKeyChar()<=90 && e.getKeyChar()>=65) || (e.getKeyChar()<=57 && e.getKeyChar()>=48) 
+						|| e.getKeyChar()==95 || e.getKeyChar()==46 || e.getKeyChar()==45) ){ // if 
+					line = fieldForInput.getText().substring(0, fieldForInput.getText().length()-1);
+					fieldForInput.setText(line);
+				}
+			}
 		}
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		Action details = fileChooser.getActionMap().get("viewTypeDetails");
-		details.actionPerformed(e);
-
-		if (e.getSource().equals(chooseFile)) {
-			fileChooser.setVisible(true);
-			int status = fileChooser.showDialog(null, "Choose File"); // gets
-																		// state
-																		// of
-																		// jfilechooser
-
-			if (status == JFileChooser.APPROVE_OPTION) { // if open is pressed
-
-				new Thread() {
-					public void run() {
-						try {
-							final File file = fileChooser.getSelectedFile(); // gets
-																				// selected
-																				// files
-																				// path
-							String fileType = Files.probeContentType(file
-									.toPath());
-							if (FILE_TYPE.equals(fileType)) {
-								log.setText("Selected file: " + file.getName()
-										+ "\n");
-								String fileName = file.getName();
-								fileName = fileName.substring(0,
-										fileName.indexOf("."))
-										+ ".csv";
-								File currentDirectory = new File(fileName);
-
-								log.append("Converting ...\n");
-								long start = System.nanoTime();
-								convert(file, currentDirectory);
-								long end = System.nanoTime();
-								long elapsedTime = end - start;
-								double seconds = (double) elapsedTime / 1000000000.0;
-								log.append("Execution time: " + seconds + "\n");
-								log.append("Created file: " + fileName);
-								openFile.setVisible(true);
-								writeToDatabase.setVisible(true);
-							} else {
-								JOptionPane.showMessageDialog(null,
-										"Invalid file type", "Warning !",
-										JOptionPane.INFORMATION_MESSAGE);
-							}
-						} catch (IOException ioe) {
-							System.out
-									.println("Exception while determening file type\n"
-											+ ioe.getMessage());
-						}
-					}
-				}.start();
-			} else if (status == JFileChooser.ERROR_OPTION) {
-				JOptionPane.showMessageDialog(null, "File chooser error",
-						"Warning !", JOptionPane.INFORMATION_MESSAGE);
-			}
-		} else if (e.getSource().equals(openFile)) {
-			try {
-				File file = fileChooser.getSelectedFile();
-				String fileName = file.getName();
-				fileName = fileName.substring(0, fileName.indexOf("."))
-						+ ".csv";
-				file = new File(fileName);
-
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					if (file.exists())
-						desktop.open(file);
-				}
-			} catch (IOException ioe) {
-				System.out.println("Exception while opening file\n"
-						+ ioe.getMessage());
-			}
-		} else if (e.getSource().equals(updateDatabase)) {
-			fileChooser.setVisible(true);
-			int status = fileChooser.showDialog(null, "Choose File"); // what
-																		// state
-																		// is
-																		// jfilechooser
-																		// in
-			if (status == JFileChooser.APPROVE_OPTION) { // if open is pressed
-				final File file = fileChooser.getSelectedFile(); // gets
-																	// selected
-																	// files
-																	// path
-
-				new Thread() {
-					public void run() {
-						try {
-							String fileType = Files.probeContentType(file
-									.toPath());
-							if (FILE_TYPE.equals(fileType)) {
-								log.setText("Selected file: " + file.getName()
-										+ "\n");
-								try {
-									ArrayList<ArrayList<String>> excelData = new ArrayList<ArrayList<String>>();
-									log.append("Reading file... \n");
-									readExcelFile(file, excelData);
-									log.append("File read successfully \n");
-									for (ArrayList<String> s : excelData) {
-										System.out.println(s);
-									}
-
-									long start = System.nanoTime();
-
-									Class.forName(JDBC_DRIVER);
-									log.append("Connecting to database... \n");
-									System.out
-											.println("Connecting to a selected database...");
-									conn = DriverManager.getConnection(DB_URL,
-											USER, PASS);
-									conn.setAutoCommit(false);
-									log.append("Connected to database successfully \n");
-									System.out
-											.println("Connected database successfully...");
-
-									StringBuilder sb = new StringBuilder(); // gets
-																			// columnNames
-																			// from
-																			// excelData
-									for (int i = 0; i < excelData.get(0).size(); i++) {
-										if (i == excelData.get(0).size() - 1) {
-											sb.append(excelData.get(0).get(i)
-													+ " "); // add column names
-															// to string builder
-										} else {
-											sb.append(excelData.get(0).get(i)
-													+ ", ");
-										}
-									}
-									String columnNames = new String(sb); // make
-																			// string
-																			// with
-																			// stringbuilder
-																			// contents
-									System.out.println(columnNames);
-									String sql = "SELECT " + columnNames
-											+ "FROM " + DB_TABLE_NAME; // make
-																		// sql
-																		// statement
-									System.out.println(sql);
-
-									stmt = conn.createStatement();
-									ResultSet rs = stmt.executeQuery(sql);
-									conn.commit();
-									ResultSetMetaData rsmd = rs.getMetaData();
-									int columnCount = rsmd.getColumnCount();
-									for (int i = 0; i < columnCount; i++) {
-										String name = rsmd.getColumnName(i + 1);
-										System.out.println(name);
-									}
-
-									System.out.println("exceldata size: "
-											+ excelData.size()); // amount of
-																	// columns
-									while (rs.next()) {
-										String number = rs.getString(excelData
-												.get(0).get(0)); // columnname =
-																	// excelData.get(0).get(i)
-										if (number != null) {
-											for (int i = 0; i < excelData
-													.size(); i++) {
-												if (number.equals(excelData
-														.get(i).get(0))) { // number
-																			// =
-																			// excelData.get(j).get(0)
-													for (int j = 1; j < excelData
-															.get(0).size(); j++) {
-														boolean isDouble = false;
-														for (String value : Doubles) {
-															if (excelData
-																	.get(0)
-																	.get(j)
-																	.equals(value)) {
-																isDouble = true;
-																break;
-															}// closes if
-																// statement
-														}// closes for statement
-														if (isDouble == true) {
-															if (Double
-																	.parseDouble(excelData
-																			.get(i)
-																			.get(j)) >= 1
-																	&& Double
-																			.parseDouble(excelData
-																					.get(i)
-																					.get(j)) <= 5) {
-																System.out
-																		.println(excelData
-																				.get(i)
-																				.get(j));
-																String statement = "UPDATE "
-																		+ DB_TABLE_NAME
-																		+ " SET "
-																		+ excelData
-																				.get(0)
-																				.get(j)
-																		+ "='"
-																		+ excelData
-																				.get(i)
-																				.get(j)
-																		+ "' WHERE "
-																		+ UNIQUE_ID
-																		+ "='"
-																		+ number
-																		+ "'";
-																stmt = conn
-																		.createStatement();
-																stmt.executeUpdate(statement);
-																System.out
-																		.println(statement);
-																conn.commit();
-															} // closesif
-																// statement
-															else {
-																log.append("At: ["
-																		+ number
-																		+ "] value: ["
-																		+ excelData
-																				.get(i)
-																				.get(j)
-																		+ "] Not in interval [1-5]\n");
-															} // closes else
-																// statement
-														}// closes if statmement
-														else {
-															String statement = "UPDATE "
-																	+ DB_TABLE_NAME
-																	+ " SET "
-																	+ excelData
-																			.get(0)
-																			.get(j)
-																	+ "='"
-																	+ excelData
-																			.get(i)
-																			.get(j)
-																	+ "' WHERE "
-																	+ UNIQUE_ID
-																	+ "='"
-																	+ number
-																	+ "'";
-															stmt = conn
-																	.createStatement();
-															System.out
-																	.println(statement);
-															stmt.executeUpdate(statement);
-															conn.commit();
-														}
-													}// closes for statement
-												}// closes if statment
-											}// closes for statement
-										}// closes while statement
-									}
-									long end = System.nanoTime();
-									long elapsedTime = end - start;
-									double seconds = (double) elapsedTime / 1000000000.0;
-									log.append("Execution time: " + seconds
-											+ "\n");
-								} catch (SQLException sqle) { // Handle errors
-																// for JDBC
-									System.out.println("SQL exception\n"
-											+ sqle.getMessage());
-								} catch (Exception e) { // Handle errors for
-														// Class.forName
-									System.out.println("Unexpected exception\n"
-											+ e.getMessage());
-								} finally {
-									try {
-										if (stmt != null) {
-											stmt.close();
-										}
-										if (conn != null)
-											conn.close();
-									} catch (SQLException sqle) {
-										System.out.println("SQL exception\n"
-												+ sqle.getMessage());
-									}
-								}
-							} else {
-								JOptionPane.showMessageDialog(null,
-										"Invalid file type", "Warning !",
-										JOptionPane.INFORMATION_MESSAGE);
-							}
-						} catch (IOException ioe) {
-							System.out
-									.println("Exception while determening file type\n"
-											+ ioe.getMessage());
-						}
-					}
-				}.start();
-
-			} else if (status == JFileChooser.ERROR_OPTION) {
-				JOptionPane.showMessageDialog(null, "File chooser error",
-						"Warning !", JOptionPane.INFORMATION_MESSAGE);
-			}
-		} else if (e.getSource().equals(exampleFile)) {
-			try {
-				File file = new File("resources/example.xlsx");
-				if (Desktop.isDesktopSupported()) {
-					Desktop desktop = Desktop.getDesktop();
-					if (file.exists())
-						desktop.open(file);
-				}
-			} catch (IOException ioe) {
-				System.out.println("Exception while opening file\n"
-						+ ioe.getMessage());
-			}
-		}
+	public void keyTyped(KeyEvent e) {
 	}
 }

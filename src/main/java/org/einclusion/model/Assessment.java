@@ -23,7 +23,6 @@ public class Assessment implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false)
 	Long id; // system generated
-	String phone; // phone number
 	String name; // student name surname
 	String topic; // study topic
 	Float swl1; // student wiling learn 1
@@ -46,24 +45,23 @@ public class Assessment implements Serializable {
 	Date submitDate; // date
 	Integer ou; // observed usage
 	Float puou; // combination of predicted usage and observed
+	String numurs;
 
 	// nepiecieshamie mainigie M1 un M3 modeliem
 	Float kfa; // knowledge flow acceleration
-
 
 	Assessment() {
 		super();
 	}
 
-	Assessment(Long id, String code, String name, String email, String phone,
-			String topic, Float swl1, Float swl2, Float swl, Float ds1,
-			Float ds2, Float ds, Float sal, Float elm1, Float elm2, Float elm,
-			Float iws, Float ele1, Float ele2, Float ele, Float pu, Float kfa,
-			Float klbl, Float klal, Float puou, Integer ou, Date submitDate) {
+	Assessment(Long id, String code, String name, String email, String topic,
+			Float swl1, Float swl2, Float swl, Float ds1, Float ds2, Float ds,
+			Float sal, Float elm1, Float elm2, Float elm, Float iws,
+			Float ele1, Float ele2, Float ele, Float pu, Float kfa, Float klbl,
+			Float klal, Float puou, Integer ou, Date submitDate, String numurs) {
 
 		this.id = id;
 		this.name = name;
-		this.phone = phone;
 		this.topic = topic;
 		this.swl1 = swl1;
 		this.swl2 = swl2;
@@ -86,6 +84,7 @@ public class Assessment implements Serializable {
 		this.puou = puou;
 		this.ou = ou;
 		this.submitDate = submitDate;
+		this.numurs = numurs;
 
 	}
 

@@ -11,7 +11,7 @@ public class TestM2 {
 	public void testGetRegression() {
 		try {
 			ModelManager.initModelManager(PERSISTENCE_SET);
-			M2.getRegression();
+		//	M2.getRegression();
 			;
 		} catch (Exception e) {
 			fail(e.getMessage() + " " + e.getCause());

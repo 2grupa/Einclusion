@@ -54,32 +54,27 @@
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
 		</dependency>
-
-		<!-- New dependencies -->
+		<!-- Dependencies for GUI -->
 		<dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>1.6.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
 			<version>3.12</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.9</version>
 		</dependency>
-
 		<dependency>
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>
 			<version>2.2.0</version>
 		</dependency>
-
 	</dependencies>
 	<!-- Best solution for creating executable jar file! make jar file with 
 		database separately from one uber jar file, libraries included Run command: 

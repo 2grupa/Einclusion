@@ -110,10 +110,15 @@ public class PrepareData {
 				Float DS = ((Float.parseFloat(value[5]) + Float.parseFloat(value[6])) / 2);
 				Float ELM = ((Float.parseFloat(value[7]) + Float.parseFloat(value[8])) / 2);
 				Float ELE = ((Float.parseFloat(value[9]) + Float.parseFloat(value[10])) / 2);
-				Float SAL = ((Float.parseFloat(value[13]) - Float.parseFloat(value[12])) * 4
-						/ ((5 - Float.parseFloat(value[12])) + 1));
+				Float SAL = (float) 0;
+				if (5 - Float.parseFloat(value[13]) == 0) {
+					SAL = (float) 0;
+				} else {
+					SAL = Math.abs((Float.parseFloat(value[13]) - Float.parseFloat(value[12])) * 100
+							/ (5 - Float.parseFloat(value[13])));
+				}
 				q = entityManager.createNativeQuery(
-						"INSERT into ASSESSMENT (Numurs,Name,Topic,IWS,KLBL,KLAL,PU,SUBMITDATE,SWL,DS,ELM,ELE,SAL)"
+						"INSERT into ASSESSMENT (Numurs,Name,Topic,IWS,KLAL,KLBL,PU,SUBMITDATE,SWL,DS,ELM,ELE,SAL)"
 								+ "Values ('" + value[0] + "','" + value[1] + "','" + value[2] + "','" + value[11]
 								+ "','" + value[12] + "','" + value[13] + "','" + value[14] + "','" + value[15] + "','"
 								+ SWL + "','" + DS + "','" + ELM + "','" + ELE + "','" + SAL + "')");

@@ -1,6 +1,6 @@
 package org.einclusion.model;
-
 import org.apache.log4j.Logger;
+import org.einclusion.GUI.AppFrame;
 
 public class Einclusion {
 	static final String FILE = "data/test-data.arff";
@@ -12,9 +12,9 @@ public class Einclusion {
 
 		try {
 			// Init DB session
-			System.out.println("Hello");
+
 			ModelManager.initModelManager(PERSISTENCE_SET);
-			System.out.println("Hello");
+
 			/*
 			 * // Clean data if (args[0].indexOf("clean") > 0) { // Delete old
 			 * assessment data PrepareData.cleanAssessment(); }
@@ -26,7 +26,7 @@ public class Einclusion {
 			// PrepareData.arff2db(FILE);
 			// Calculate derived values
 			// PrepareData.calculateValues();
-			System.out.println("Hello");
+
 			PrepareData.csv2db(FILE_TEST);
 
 			// Learn data
@@ -41,6 +41,8 @@ public class Einclusion {
 			M2.getRegression("Robotika", "M2-robotika");
 			M2.getRegression("Mobilās tehnoloģijas", "M2-mobilas");
 
+			//TODO metode kas izrekina % no max m2 un saglaba db
+			
 			// Calculate M3 data
 			// M3.getRegression();
 

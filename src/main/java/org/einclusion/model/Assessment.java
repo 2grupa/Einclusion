@@ -54,11 +54,12 @@ public class Assessment implements Serializable {
 		super();
 	}
 
-	Assessment(Long id, String code, String name, String email, String topic,
-			Float swl1, Float swl2, Float swl, Float ds1, Float ds2, Float ds,
-			Float sal, Float elm1, Float elm2, Float elm, Float iws,
-			Float ele1, Float ele2, Float ele, Float pu, Float kfa, Float klbl,
-			Float klal, Float puou, Integer ou, Date submitDate, String numurs) {
+	Assessment(Long id, String code, String name, String email,
+			String topic, Float swl1, Float swl2, Float swl, Float ds1,
+			Float ds2, Float ds, Float sal, Float elm1, Float elm2, Float elm,
+			Float iws, Float ele1, Float ele2, Float ele, Float pu, Float kfa,
+			Float klbl, Float klal, Float puou, Integer ou, Date submitDate,
+			String numurs) {
 
 		this.id = id;
 		this.name = name;

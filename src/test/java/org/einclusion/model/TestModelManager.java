@@ -41,11 +41,11 @@ public class TestModelManager {
 		}
 
 		try {
-			Assessment assess = new Assessment();
+			Student assess = new Student();
 			assess.name = "name" + value;
 			ModelManager.setObjectValue("test-assessment", assess);
-			Assessment tmp = new Assessment();
-			tmp = (Assessment) ModelManager.getObjectValue("test-assessment",
+			Student tmp = new Student();
+			tmp = (Student) ModelManager.getObjectValue("test-assessment",
 					tmp.getClass());
 			assertEquals(assess.name, tmp.name);
 

@@ -20,33 +20,33 @@ public class TestAssessment {
 	public void test() {
 		try {
 			Date date = new Date();
-			Assessment assessment = new Assessment();
+			Student student = new Student();
 
 			// Test creation of new entry
-			assessment.name = "Name0";
-			assessment.submitDate = date;
-			final Long id = Assessment.setAssessment(assessment);
-			Assessment tmp = Assessment.getAssessment(id);
+			student.name = "Name0";
+			student.submitDate = date;
+			final Long id = Student.setStudent(student);
+			Student tmp = Student.getStudent(id);
 			assertEquals("ID is WRONG", id, tmp.id);
-			assertEquals("Name is WRONG", assessment.name, tmp.name);
-			assertEquals("SubmitDate is WRONG", assessment.submitDate,
+			assertEquals("Name is WRONG", student.name, tmp.name);
+			assertEquals("SubmitDate is WRONG", student.submitDate,
 					tmp.submitDate);
 			LOG.info("Creation of new entry OK");
 
 			// Test update
-			assessment = Assessment.getAssessment(id);
+			student = Student.getStudent(id);
 			date = new Date();
-			assessment.name = "Name";
-			assessment.submitDate = date;
-			assessment.id = id;
-			Assessment.setAssessment(assessment);
-			tmp = Assessment.getAssessment(id);
-			assertEquals("ID after update is WRONG", assessment.id, tmp.id);
-			assertEquals("Name after update is WRONG", assessment.name,
+			student.name = "Name";
+			student.submitDate = date;
+			student.id = id;
+			Student.setStudent(student);
+			tmp = Student.getStudent(id);
+			assertEquals("ID after update is WRONG", student.id, tmp.id);
+			assertEquals("Name after update is WRONG", student.name,
 					tmp.name);
 			assertEquals("SubmitDate after update is WRONG",
-					assessment.submitDate, tmp.submitDate);
-			LOG.info("Assessment:\n" + assessment);
+					student.submitDate, tmp.submitDate);
+			LOG.info("Assessment:\n" + student);
 			LOG.info("Update of the entry OK");
 
 			// Check getting list of entries
@@ -60,13 +60,13 @@ public class TestAssessment {
 
 	private void getList() {
 		try {
-			final List<Assessment> assessments = Assessment.getAssessments();
-			LOG.info("Selected elements:" + assessments.size());
+			final List<Student> student = Student.getStudent();
+			LOG.info("Selected elements:" + student.size());
 			int i = 0;
-			for (Assessment a : assessments) {
+			for (Student a : student) {
 				a.name = "Name" + Integer.toString(i);
-				Assessment.setAssessment(a);
-				Assessment tmp = Assessment.getAssessment(a.id);
+				Student.setStudent(a);
+				Student tmp = Student.getStudent(a.id);
 				assertEquals(tmp.name, "Name" + Integer.toString(i));
 				i++;
 			}

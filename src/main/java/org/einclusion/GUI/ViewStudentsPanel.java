@@ -24,12 +24,12 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "org.h2.Driver";
-	static final String DB_PATH = "data/Studenti";
+	static final String DB_PATH = "data/Student";
 	static final String DB_URL = "jdbc:h2:" + DB_PATH;
 	// Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
-	static final String DB_TABLE_NAME = "STUDENTI";
+	static final String DB_TABLE_NAME = "STUDENT";
 	static final String DB_REGRESSION_TABLE = "MODELMANAGER";
 
 	JTable table;
@@ -207,18 +207,18 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 				ResultSet rs = pStmt.executeQuery();
 				conn.commit();
 
-				if (colVal.equals("NAME") || colVal.equals("TEMA")) {
+				if (colVal.equals("NAME") || colVal.equals("TOPIC")) {
 					while (rs.next()) {
 						Clob clob = rs.getClob(colVal);
 						ts.add(clob.getSubString(1, (int) clob.length()));
 					}
-				} else if (colVal.equals("IZPILDITS")) {
+				} else if (colVal.equals("SUBMITDATE")) {
 					while (rs.next()) {
 						Date dateStamp = new Date(rs.getTimestamp(colVal)
 								.getTime());
 						ts.add(dateStamp.toString());
 					}
-				} else if (colVal.equals("NUMURS")) {
+				} else if (colVal.equals("PHONE")) {
 					while (rs.next())
 						ts.add(rs.getLong(colVal) + "");
 				} else {
@@ -306,8 +306,8 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 						+ " WHERE NAME IS NOT 'test' AND " + colName
 						+ " = ? ORDER BY NAME";
 				pStmt = conn.prepareStatement(sql);
-				if (colName.equals("NAME") || colName.equals("TEMA")
-						|| colName.equals("IZPILDITS"))
+				if (colName.equals("NAME") || colName.equals("TOPIC")
+						|| colName.equals("SUBMITDATE"))
 					pStmt.setString(1, value);
 				else
 					pStmt.setDouble(1, Double.parseDouble(value));
@@ -317,12 +317,12 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 
 			tableModel.setRowCount(0); // clears table contents
 			while (rs.next()) {
-				String ID = rs.getBigDecimal("NUMURS") + "";
+				String ID = rs.getBigDecimal("PHONE") + "";
 				Clob clob = rs.getClob("NAME");
 				String name = clob.getSubString(1, (int) clob.length());
-				clob = rs.getClob("TEMA");
+				clob = rs.getClob("TOPIC");
 				String course = clob.getSubString(1, (int) clob.length());
-				Date dateStamp = new Date(rs.getTimestamp("IZPILDITS")
+				Date dateStamp = new Date(rs.getTimestamp("SUBMITDATE")
 						.getTime());
 				String date = dateStamp.toString();
 				String mot = rs.getDouble("SWL") + "";
@@ -392,13 +392,13 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 
 		switch (colName) {
 		case "ID":
-			shortCol = "NUMURS";
+			shortCol = "PHONE";
 			break;
 		case "Name":
 			shortCol = "NAME";
 			break;
 		case "Topic":
-			shortCol = "TEMA";
+			shortCol = "TOPIC";
 			break;
 		case "Motivation":
 			shortCol = "SWL";
@@ -419,7 +419,7 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 			shortCol = "SAL";
 			break;
 		case "Submit date":
-			shortCol = "IZPILDITS";
+			shortCol = "SUBMITDATE";
 			break;
 		case "PO Usage":
 			shortCol = "PUOU";

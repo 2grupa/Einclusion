@@ -15,26 +15,7 @@ public class Einclusion {
 			// Init DB session
 			ModelManager.initModelManager(PERSISTENCE_SET);
 
-			/*
-			 * // Clean data if (args[0].indexOf("clean") > 0) { // Delete old
-			 * assessment data PrepareData.cleanAssessment(); }
-			 */
-
-			// Load data
-			// if (args[0].indexOf("load") > 0) {
-			// Load test data from file to database
-			// PrepareData.arff2db(FILE);
-			// Calculate derived values
-			// PrepareData.calculateValues();
-
 			PrepareData.csv2db(FILE_TEST);
-
-			// Learn data
-			// }
-			// if (args[0].indexOf("learn") > 0) {
-			// Calculate M1 data
-			// M1.getClusters();
-			// M1.getCentroids();
 
 			// Calculate M2 data
 			M2.getRegression("Video", "M2-video");

@@ -65,12 +65,12 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 	File path;
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "org.h2.Driver";
-	static final String DB_URL = "jdbc:h2:data/Studenti";
+	static final String DB_URL = "jdbc:h2:data/Student";
 	// Database credentials
 	static final String USER = "sa";
 	static final String PASS = "";
-	static final String DB_TABLE_NAME = "STUDENTI";
-	static final String UNIQUE_ID = "NUMURS";
+	static final String DB_TABLE_NAME = "STUDENT";
+	static final String UNIQUE_ID = "PHONE";
 	static final String[] DOUBLES = { "SWL", "SAL", "ELM", "IWS", "ELE",
 			"PUOU", "DS", "M2", "OU", "PU" };
 
@@ -211,7 +211,7 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 													// jlabel
 		this.add(labelForInput); // adds jlabel to jpanel
 
-		fieldForInput = new JTextField("Students"); // creates a jbutton for
+		fieldForInput = new JTextField("Student"); // creates a jbutton for
 													// user input
 		fieldForInput.setToolTipText("Enter a file name without the extension");
 		fieldForInput.setFont(new Font("Arial", Font.BOLD, 12)); // sets font
@@ -587,7 +587,7 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 			conn.setAutoCommit(false); // sets autocommit to false
 			// , NAME, TEMA, SWL, SAL, ELM, IWS, ELE, PUOU, IZPILDITS, DS, M2,
 			// OU, PU
-			String sql = "SELECT NUMURS, NAME, TEMA, SWL, SAL, ELM, IWS, ELE, PUOU, IZPILDITS, DS, M2, OU, PU FROM "
+			String sql = "SELECT PHONE, NAME, TOPIC, SWL, SAL, ELM, IWS, ELE, PUOU, SUBMITDATE, DS, M2, OU, PU FROM "
 					+ DB_TABLE_NAME;
 			stmt = conn.createStatement(); // creates a new statement object
 			ResultSet rs = stmt.executeQuery(sql); // a table of data that is
@@ -613,7 +613,7 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 
 			int rowCounter = 2; // counts rows
 			while (rs.next()) { // while table has contents
-				String numurs = rs.getString("NUMURS"); // gets uniqueid NUMURS
+				String numurs = rs.getString("PHONE"); // gets uniqueid PHONE
 														// from database
 				if (numurs != null) { // if NUMURS is initiliazed
 					row = sheet.createRow(rowCounter); // creates a new row
@@ -628,7 +628,7 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 					cell.setCellValue(name); // sets cell value
 					cellCounter++; // increases cell counter
 
-					String tema = rs.getString("TEMA");
+					String tema = rs.getString("TOPIC");
 					cell = row.createCell(cellCounter);
 					cell.setCellValue(tema);
 					cellCounter++;
@@ -663,7 +663,7 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 					cell.setCellValue(puou);
 					cellCounter++;
 
-					Timestamp timeStamp = rs.getTimestamp("IZPILDITS");
+					Timestamp timeStamp = rs.getTimestamp("SUBMITDATE");
 					cell = row.createCell(cellCounter);
 					cell.setCellValue(timeStamp.toString());
 					cellCounter++;

@@ -36,8 +36,8 @@ public class M2 {
 			remove.setInputFormat(data);
 
 			// Save regression coefficients
-			 Regression regression = new Regression(model, data);
-			 ModelManager.setObjectValue(REGRESSION_KEY, regression);
+			Regression regression = new Regression(model, data);
+			ModelManager.setObjectValue(REGRESSION_KEY, regression);
 
 		} catch (Exception e) {
 			// LOG.error(e.getMessage() + " " + e.getCause());

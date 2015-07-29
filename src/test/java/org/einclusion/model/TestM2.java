@@ -11,7 +11,9 @@ public class TestM2 {
 	public void testGetRegression() {
 		try {
 			ModelManager.initModelManager(PERSISTENCE_SET);
-		//	M2.getRegression();
+			M2.getRegression("Video", "M2-video");
+			M2.getRegression("Robotika", "M2-robotika");
+			M2.getRegression("Mobilās tehnoloģijas", "M2-mobilas");
 			;
 		} catch (Exception e) {
 			fail(e.getMessage() + " " + e.getCause());

@@ -1,9 +1,10 @@
 package org.einclusion.model;
+
 import org.apache.log4j.Logger;
 import org.einclusion.GUI.AppFrame;
 
 public class Einclusion {
-	static final String FILE = "data/test-data.arff";
+
 	static final String FILE_TEST = "data/feedback.csv";
 	static final String PERSISTENCE_SET = "test";
 	private static final Logger LOG = Logger.getLogger(InstanceManager.class);
@@ -12,7 +13,6 @@ public class Einclusion {
 
 		try {
 			// Init DB session
-
 			ModelManager.initModelManager(PERSISTENCE_SET);
 
 			/*
@@ -41,8 +41,8 @@ public class Einclusion {
 			M2.getRegression("Robotika", "M2-robotika");
 			M2.getRegression("Mobilās tehnoloģijas", "M2-mobilas");
 
-			//TODO metode kas izrekina % no max m2 un saglaba db
-			
+			// TODO metode kas izrekina % no max m2 un saglaba db
+
 			// Calculate M3 data
 			// M3.getRegression();
 

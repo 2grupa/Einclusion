@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import static org.einclusion.model.ModelManager.*;
 
 @Entity
+@Table(name="Student")
 @DynamicUpdate(value = true)
 public class Student implements Serializable {
 	private static final Logger LOG = Logger.getLogger(Student.class);
@@ -43,12 +44,27 @@ public class Student implements Serializable {
 	void setName(String name) {
 		this.name = name;
 	}
-
+	
 	public static List<Student> getStudent() {
 		List<Student> tmp = new LinkedList<Student>();
 		try {
 			TypedQuery<Student> query = entityManager.createQuery(
 					"FROM Student", Student.class);
+
+			List<Student> students = query.getResultList();
+			return students;
+
+		} catch (Exception e) {
+			LOG.error(e.getMessage() + " " + e.getCause());
+		}
+		return tmp;
+	}
+	
+	public static List<Student> getStudents(String topic) {
+		List<Student> tmp = new LinkedList<Student>();
+		try {
+			TypedQuery<Student> query = entityManager.createQuery(
+					"FROM Student WHERE Name IS NOT 'test' AND Topic IS '"+topic+"'" , Student.class);
 
 			List<Student> students = query.getResultList();
 			return students;

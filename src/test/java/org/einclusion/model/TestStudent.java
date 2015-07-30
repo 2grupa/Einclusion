@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 
 @FixMethodOrder
-public class TestAssessment {
-	private static final Logger LOG = Logger.getLogger(TestAssessment.class);
+public class TestStudent {
+	private static final Logger LOG = Logger.getLogger(TestStudent.class);
 
 	@BeforeClass
 	public static void setUp() {
@@ -46,7 +46,7 @@ public class TestAssessment {
 					tmp.name);
 			assertEquals("SubmitDate after update is WRONG",
 					student.submitDate, tmp.submitDate);
-			LOG.info("Assessment:\n" + student);
+			LOG.info("Student:\n" + student);
 			LOG.info("Update of the entry OK");
 
 			// Check getting list of entries

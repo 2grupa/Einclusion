@@ -527,7 +527,8 @@ public class ImportPanel extends JPanel implements ActionListener, KeyListener {
 					{
 						if (firstIteration == true) { // if first iteration
 							columnName = cell.getStringCellValue().trim(); // get
-																			// column name
+																			// column
+																			// name
 							rows.add(columnName); // add to arraylist
 						} else {
 							cellValue = cell.getStringCellValue().trim(); // get

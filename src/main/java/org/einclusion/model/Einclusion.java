@@ -22,12 +22,6 @@ public class Einclusion {
 			M2.getRegression("Robotika", "M2-robotika");
 			M2.getRegression("Mobilās tehnoloģijas", "M2-mobilas");
 
-			// TODO metode kas izrekina % no max m2 un saglaba db
-
-			// Calculate M3 data
-			// M3.getRegression();
-
-			// }
 			AppFrame gui = new AppFrame();
 			gui.setVisible(true);
 

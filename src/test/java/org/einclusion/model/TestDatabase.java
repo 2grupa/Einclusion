@@ -12,15 +12,19 @@ public class TestDatabase {
 	static final String PERSISTENCE_SET = "test";
 
 	@Test
-	public void testGetRegression() {
+	public void testDatabase() {
 		try {
 			ModelManager.initModelManager(PERSISTENCE_SET);
-			// copy data from temporary table to Assessment table
 			transaction.begin();
 			Query q = entityManager
-					.createNativeQuery("insert into assessment (SWL1, SWL2, DS1, DS2, KLBL, KLAL, ELE1, ELE2, ELM1, ELM2, IWS, PU, OU)"
-							+ " values(5.0, 4.0, 3.0, 2.0, 1.0, 4.0, 3.0, 2.0, 1.0, 1.0, 5.0, 3.0, 2);");
+					.createNativeQuery("Insert into Student (SWL, DS, KLBL, KLAL, ELE, ELM, IWS, PU, OU, TOPIC)"
+							+ " values(5.0, 4.0, 3.0, 2.0, 1.0, 4.0, 3.0, 2.0, 1.0, 'Cleaning');");
 			q.executeUpdate();
+
+			q = entityManager
+					.createNativeQuery("Delete from Student where TOPIC='Cleaning';");
+			q.executeUpdate();
+
 			transaction.commit();
 		} catch (Exception e) {
 			fail(e.getMessage() + " " + e.getCause());

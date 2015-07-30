@@ -26,8 +26,4 @@ public class Coefficient {
 		this.value = value;
 	}
 
-	@Override
-	public String toString() {
-		return "Coefficient [name=" + name + ", value=" + value + "]";
-	}
 }

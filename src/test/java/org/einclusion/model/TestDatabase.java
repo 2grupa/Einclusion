@@ -30,7 +30,6 @@ public class TestDatabase {
 			fail(e.getMessage() + " " + e.getCause());
 		} finally {
 			ModelManager.closeModelManager();
-		}
-	}*/
+		}*/
 	}
 }

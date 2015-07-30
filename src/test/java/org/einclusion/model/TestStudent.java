@@ -18,7 +18,7 @@ public class TestStudent {
 
 	@Test
 	public void test() {
-	/*	try {
+		/*try {
 			Date date = new Date();
 			Student student = new Student();
 
@@ -42,8 +42,7 @@ public class TestStudent {
 			Student.setStudent(student);
 			tmp = Student.getStudent(id);
 			assertEquals("ID after update is WRONG", student.id, tmp.id);
-			assertEquals("Name after update is WRONG", student.name,
-					tmp.name);
+			assertEquals("Name after update is WRONG", student.name, tmp.name);
 			assertEquals("SubmitDate after update is WRONG",
 					student.submitDate, tmp.submitDate);
 			LOG.info("Student:\n" + student);
@@ -80,6 +79,7 @@ public class TestStudent {
 	public static void tearDown() {
 		ModelManager.closeModelManager();
 		LOG.info("Test finished successfully");
+
 	}*/
-}
+	}
 }

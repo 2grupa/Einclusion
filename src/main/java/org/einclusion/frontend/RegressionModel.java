@@ -43,7 +43,8 @@ public class RegressionModel {
 	/**
 	 * Splits member 'value' into Coefficients, keeps them in ArrayList 'coefficients'.
 	 */
-	private void getCoefficients() {
+	public void getCoefficients() {
+		coefficients.clear();
 		String sr[] = this.value.replaceAll("[{}]", "").split(",");
 		
 		String coef = sr[0].split(":")[2];
@@ -105,12 +106,5 @@ public class RegressionModel {
 			}
 		}
 		return result;
-	}
-	@Override
-	public String toString() {
-		return "RegressionModel [key=" + key + ", value=" + value
-				+ ", coefficients=" + coefficients + "]";
-	}
-	
-	
+	}	
 }

@@ -51,12 +51,10 @@ public class TestModelManager {
 			final float tmp3 = ModelManager.getFloatValue(key);
 			assertEquals(floatValue, tmp3, 0);
 			
-
 		} catch (Exception e) {
 			LOG.error(e.getMessage() + " " + e.getCause());
 			fail();
 		}
-		
 		
 		try {
 			Student assess = new Student();
@@ -103,7 +101,6 @@ public class TestModelManager {
 			LOG.error(e.getMessage() + " " + e.getCause());
 			fail();
 		}
-	
 	}
 
 	@AfterClass

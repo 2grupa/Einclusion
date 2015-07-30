@@ -12,73 +12,59 @@ public class TestStudent {
 
 	@BeforeClass
 	public static void setUp() {
-		LOG.info("TestModelManager started...");
+		LOG.info("TestStudent started...");
 		ModelManager.initModelManager("test");
 	}
 
 	@Test
-	public void test() {
-		/*try {
+	public void testStudent() {
+		try {
 			Date date = new Date();
-			Student student = new Student();
-
-			// Test creation of new entry
-			//student.name = name;
-			student.submitDate = date;
-			final Long id = Student.setStudent(student);
-			Student tmp = Student.getStudent(id);
-			assertEquals("ID is WRONG", id, tmp.id);
-			assertEquals("Name is WRONG", student.name, tmp.name);
-			assertEquals("SubmitDate is WRONG", student.submitDate,
-					tmp.submitDate);
-			LOG.info("Creation of new entry OK");
-
-			// Test update
-			student = Student.getStudent(id);
-			date = new Date();
-			student.name = "Name";
-			student.submitDate = date;
-			student.id = id;
+			Long id = 1L;
+			String name = "Test" + date;
+			
+			Student student = Student.getStudent(id);
+			String originalName = student.name;
+			student.setName(name);
 			Student.setStudent(student);
-			tmp = Student.getStudent(id);
-			assertEquals("ID after update is WRONG", student.id, tmp.id);
-			assertEquals("Name after update is WRONG", student.name, tmp.name);
-			assertEquals("SubmitDate after update is WRONG",
-					student.submitDate, tmp.submitDate);
+			
+			student = Student.getStudent(id);
 			LOG.info("Student:\n" + student);
-			LOG.info("Update of the entry OK");
-
-			// Check getting list of entries
-			getList();
+			assertEquals("Name is WRONG", name, student.name);
+			LOG.info("Set/Get Student entry OK");
+			
+			LOG.info("Reversing changes...");
+			student.setName(originalName);
+			Student.setStudent(student);
 
 		} catch (Exception e) {
 			LOG.error(e.getMessage() + " " + e.getCause());
 			fail();
 		}
 	}
-
-	private void getList() {
+	
+	@Test
+	public void getList() {
 		try {
 			final List<Student> student = Student.getStudent();
 			LOG.info("Selected elements:" + student.size());
 			int i = 0;
 			for (Student a : student) {
-				a.name = "Name" + Integer.toString(i);
-				Student.setStudent(a);
-				Student tmp = Student.getStudent(a.id);
-				assertEquals(tmp.name, "Name" + Integer.toString(i));
-				i++;
+				if (a.name.equals("test"))
+					i++;
 			}
+			assertEquals("Listed object count is WRONG", 134, i);
+			LOG.info("Test OK");
 		} catch (Exception e) {
 			LOG.error(e.getMessage() + " " + e.getCause());
 			fail();
 		}
-	}
-
+	}	
+	
 	@AfterClass
 	public static void tearDown() {
 		ModelManager.closeModelManager();
-		LOG.info("Test finished successfully");
-*/
+		LOG.info("TestStudent finished.");
+
 	}
 }

@@ -194,8 +194,25 @@ public class ViewStudentsPanel extends JPanel implements ActionListener, KeyList
 		v.add(date);
 		v.add(round(Double.parseDouble(m2risk),2));
 		
-		if (v.size() == tableModel.getColumnCount())
+		if (v.size() == tableModel.getColumnCount()){
 			tableModel.addRow(v);
+			
+			ArrayList<String> row = new ArrayList<String>();
+			row.add(ID); 		
+			row.add(name);		
+			row.add(course);	
+			row.add(motivation);
+			row.add(digSkills); 
+			row.add(eRsrce);	
+			row.add(eEnvrnmnt);	
+			row.add(instructor);
+			row.add(learningCpcty);
+			row.add(date);		
+			row.add(round(Double.parseDouble(m2risk),2)+"");	
+			if( row.size() > 0)
+				list.add(row);
+			
+		}
 	}
 	/**
 	 * Sets up table and initial filter field values. Prepares table model and sets column header. 
@@ -369,22 +386,6 @@ public class ViewStudentsPanel extends JPanel implements ActionListener, KeyList
             	}
             	
             	addTableLine(ID, name, course, mot, digSkills, eRsrc, eEnvrn, instr, learnCpcty, date, m2risk);
-            	
-            	ArrayList<String> row = new ArrayList<String>();
-				row.add(ID); 		//PHONE
-				row.add(name);		//NAME
-				row.add(course);	//TOPIC
-				row.add(mot);		//SUBMITDATE
-				row.add(digSkills); //SWL
-				row.add(eRsrc);		//DS
-				row.add(eEnvrn);	//ELM
-				row.add(instr);		//ELE
-				row.add(learnCpcty);//IWS
-				row.add(date);		//SAL
-				row.add(m2risk);	//M2
-				if( row.size() > 0)
-					list.add(row);
-            	
             }
         } catch (SQLException se) { //Handle errors for JDBC
             se.printStackTrace();

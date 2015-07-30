@@ -217,7 +217,8 @@ public class ImportPanel extends JPanel implements ActionListener {
 				int skipKursaID = 18;	//Kursa ID column number set manually so it can be skipped
 				int skipKurss = 19;		//Kurss column number set manually so it can be skipped
 				int date = skipKursaID -1;	//Assumes date column is the column just before Kursa ID column
-
+				short emptyCellCount = -1;
+				
 				String dateString; //will hold the date cell as written in the excel file
 
 				for(Row row : sheet){	 //while there are rows
@@ -326,9 +327,14 @@ public class ImportPanel extends JPanel implements ActionListener {
 										data.append(cell.getStringCellValue() + ",");
 									break;
 								case Cell.CELL_TYPE_BLANK:
-									if(row.getRowNum() > 1){
-										data.append("No data" + ",");
-										break;
+									if(row.getRowNum() > 1 ){
+										if(cn == 2 || cn == 3 || cn == date) //these are the cells that contain text
+											data.append("-No data-" + ",");	//and will be written to the CSV file
+										else{
+											data.append(emptyCellCount + ",");		//all other columns are expected to be numbers
+											emptyCellCount--;
+										}
+											break;
 									}
 									else
 										break;
@@ -643,7 +649,7 @@ public class ImportPanel extends JPanel implements ActionListener {
 			}
 		}
 		else if(e.getSource().equals(exampleFile)){
-			File file = new File("resources/example.xlsx");	// creates file path to example.xlsx file
+			File file = new File("data/example.xlsx");	// creates file path to example.xlsx file
 			openFile(file);									// function that opens file with its default program
 		}
 

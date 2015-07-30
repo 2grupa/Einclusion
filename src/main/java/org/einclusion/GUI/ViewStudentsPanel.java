@@ -1,25 +1,34 @@
 package org.einclusion.GUI;
 
 import javax.swing.*;
-import java.awt.*;
-import java.sql.*;
 
+import java.awt.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.Vector;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.einclusion.frontend.RegressionModel;
 
 /**
  * Panel for a table view of Database table with calculated student e-inclusion degrees. 
  */
-public class ViewStudentsPanel extends JPanel implements ActionListener {
+public class ViewStudentsPanel extends JPanel implements ActionListener, KeyListener {
 	private static final long serialVersionUID = 1L;
 	// JDBC driver name and database URL
     static final String JDBC_DRIVER = "org.h2.Driver";
@@ -31,6 +40,11 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
     static final String DB_TABLE_NAME = "STUDENT";
     static final String DB_REGRESSION_TABLE = "MODELMANAGER";
 	
+    public static ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+	static final String[] COLUMNS = {"PHONE","NAME","TOPIC","SWL","DS","ELM","ELE","IWS","SAL","SUBMITDATE","M2"};
+	JButton writeToXlsx;
+	JTextField fieldForInput;
+    
 	JTable table;
 	DefaultTableModel tableModel;
 	JComboBox<String> comboBox_1;
@@ -51,42 +65,67 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 		
 		JPanel panel = new JPanel();
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{202, 0, 42, 0, 0};
-		gbl_panel.rowHeights = new int[]{15, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] { 100, 100, 100, 150, 140, 100 };
+		gbl_panel.rowHeights = new int[] { 30, 0 };
+		gbl_panel.columnWeights = new double[] { 0.5, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
+		
+		fieldForInput = new JTextField("Students");					// creates a jbutton for user input
+		fieldForInput.setToolTipText("Enter a file name without the extension");
+		fieldForInput.setFont(new Font("Arial", Font.BOLD, 12));	// sets fonr for jTextField
+		GridBagConstraints gbc_input =	new GridBagConstraints();
+		gbc_input.fill = GridBagConstraints.HORIZONTAL;
+		gbc_input.insets = new Insets(0, 10, 0, 10);
+		gbc_input.gridx = 0;
+		gbc_input.gridy = 0;
+		gbc_input.ipady = 6;
+		fieldForInput.addKeyListener(this); 						// add keylistener to jtextfield
+		panel.add(fieldForInput, gbc_input);
+		
+		writeToXlsx = new JButton("Export to xlsx");
+		GridBagConstraints gbc_export =	new GridBagConstraints();
+		writeToXlsx.setToolTipText("Exports .xlsx file to Desktop");	// sets tooltip for jbutton
+		writeToXlsx.setFont(new Font("Arial", Font.BOLD, 12));					// sets font for jbutton
+		gbc_export.anchor = GridBagConstraints.WEST;
+		gbc_export.insets = new Insets(0, 0, 0, 5);
+		gbc_export.gridx = 1;
+		gbc_export.gridy = 0;
+		writeToXlsx.addActionListener(this);						// adds actionlistener to jbutton
+		panel.add(writeToXlsx, gbc_export);
 		
 		JLabel lblNewLabel = new JLabel("Filter:");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
-		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridx = 2;
 		gbc_lblNewLabel.gridy = 0;
 		panel.add(lblNewLabel, gbc_lblNewLabel);
-		
+
 		comboBox_1 = new JComboBox<String>();
 		GridBagConstraints gbc_comboBox_1 = new GridBagConstraints();
 		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox_1.insets = new Insets(0, 0, 0, 5);
-		gbc_comboBox_1.gridx = 1;
+		gbc_comboBox_1.gridx = 3;
 		gbc_comboBox_1.gridy = 0;
 		panel.add(comboBox_1, gbc_comboBox_1);
-		
+
 		comboBox_2 = new JComboBox<>();
 		GridBagConstraints gbc_comboBox_2 = new GridBagConstraints();
 		gbc_comboBox_2.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBox_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox_2.gridx = 2;
+		gbc_comboBox_2.gridx = 4;
 		gbc_comboBox_2.gridy = 0;
 		panel.add(comboBox_2, gbc_comboBox_2);
-		
+
 		add(panel, BorderLayout.NORTH);
-		
+
 		btnApply = new JButton("Apply");
 		btnApply.addActionListener(this);
 		GridBagConstraints gbc_btnApply = new GridBagConstraints();
-		gbc_btnApply.gridx = 3;
+		gbc_btnApply.insets = new Insets(0, 0, 0, 10);
+		gbc_btnApply.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnApply.gridx = 5;
 		gbc_btnApply.gridy = 0;
 		panel.add(btnApply, gbc_btnApply);
 		
@@ -300,6 +339,8 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
             ResultSet rs = pStmt.executeQuery();
             conn.commit();
             
+            list.clear(); 				// clears the arraylist
+            
             tableModel.setRowCount(0); // clears table contents
             while (rs.next()) {
             	String ID = rs.getBigDecimal("PHONE") + "";
@@ -315,7 +356,6 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
             	String learnCpcty = rs.getDouble("SAL") + "";
             	String m2risk = rs.getDouble("M2") + "";        	
             	
-            	System.out.println(course);
             	String regressionModel = getRegressionModel(course);
             	for (RegressionModel rm: regressionModels) {
             		if (rm.key.equals(regressionModel)) {
@@ -329,6 +369,22 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
             	}
             	
             	addTableLine(ID, name, course, mot, digSkills, eRsrc, eEnvrn, instr, learnCpcty, date, m2risk);
+            	
+            	ArrayList<String> row = new ArrayList<String>();
+				row.add(ID); 		//PHONE
+				row.add(name);		//NAME
+				row.add(course);	//TOPIC
+				row.add(mot);		//SUBMITDATE
+				row.add(digSkills); //SWL
+				row.add(eRsrc);		//DS
+				row.add(eEnvrn);	//ELM
+				row.add(instr);		//ELE
+				row.add(learnCpcty);//IWS
+				row.add(date);		//SAL
+				row.add(m2risk);	//M2
+				if( row.size() > 0)
+					list.add(row);
+            	
             }
         } catch (SQLException se) { //Handle errors for JDBC
             se.printStackTrace();
@@ -406,7 +462,6 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 	 * @return (String) if model for given course found, NULL if course not recognized. 
 	 */
 	String getRegressionModel(String course) {
-		System.out.println(course);
 		String regressionModel = null;
 		switch (course) {
 			case "Robotika":
@@ -463,6 +518,47 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 		} else if (e.getSource().equals(btnApply)) {
 			// makes the table show only filter appropriate items.
 			readDBfiltered(comboBox_1.getSelectedItem().toString(), comboBox_2.getSelectedItem().toString());
+		} else if (e.getSource().equals(writeToXlsx)) {
+			
+			if( list.size() > 0 && fieldForInput.getText().length() > 0 ){
+				@SuppressWarnings("resource")
+				XSSFWorkbook wb = new XSSFWorkbook();			// create Workbook instance for xlsx file
+				XSSFSheet sheet = wb.createSheet("detailed");	// create Sheet for xlsx file
+				
+				XSSFRow row = sheet.createRow(1); 				// creates a new row in 2nd row of the file
+				XSSFCell cell;									// cell object
+				
+				for(int i = 0; i < COLUMNS.length; i++){
+					cell = row.createCell(i);				// creates a new cell in i column
+					cell.setCellValue(COLUMNS[i]);		// sets cell value to column name from database
+				}
+				int counter = 0;
+				for(int i = 2; i < list.size()+2; i++){	// iterates rows times
+					row = sheet.createRow(i);			// creates a new row 
+					
+					for(int j = 0; j < list.get(0).size(); j++){		// iterates columns times
+						cell = row.createCell(j);					// creates a new cell
+						cell.setCellValue(list.get(counter).get(j));	// sets cell value
+					}
+					counter++;
+				}
+				
+				for(int i = 0; i < list.get(0).size(); i++){
+					sheet.autoSizeColumn(i);
+				}
+				
+				try
+				{
+					File file = new File(System.getProperty("user.home") + "/Desktop/" + fieldForInput.getText() + ".xlsx");
+					FileOutputStream fileOut = new FileOutputStream(file);
+					wb.write(fileOut);	// write to file
+					fileOut.flush();	// clears bytes from output stream
+					fileOut.close();	// closes outputstream
+				}
+				catch( IOException ioe ){
+					System.out.println("Input output exception\n"+ ioe.getMessage());
+				}
+			}
 		}
 	}
 	
@@ -497,5 +593,37 @@ public class ViewStudentsPanel extends JPanel implements ActionListener {
 			
 			return c;
 		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getSource().equals(fieldForInput)){
+			String line;
+			if( e.getKeyCode()!=KeyEvent.VK_DELETE && e.getKeyCode()!=KeyEvent.VK_BACK_SPACE && e.getKeyCode()!=KeyEvent.VK_CONTROL
+					&& e.getKeyCode()!=KeyEvent.VK_SHIFT && e.getKeyCode()!=KeyEvent.VK_CAPS_LOCK && e.getKeyCode()!=KeyEvent.VK_LEFT
+					&& e.getKeyCode()!=KeyEvent.VK_UP && e.getKeyCode()!=KeyEvent.VK_RIGHT && e.getKeyCode()!=KeyEvent.VK_DOWN&& e.getKeyCode()!=KeyEvent.VK_KP_LEFT
+					&& e.getKeyCode()!=KeyEvent.VK_KP_UP && e.getKeyCode()!=KeyEvent.VK_KP_RIGHT && e.getKeyCode()!=KeyEvent.VK_KP_DOWN){ 
+				// ignores backspace, delete, shift, caps lock, control and arrows
+				if( !((e.getKeyChar()<=122 && e.getKeyChar()>=97) || (e.getKeyChar()<=90 && e.getKeyChar()>=65) || (e.getKeyChar()<=57 && e.getKeyChar()>=48) 
+						|| e.getKeyChar()==95) ){ 	// if char is not a-z or A-Z or 0-9 then delete it from JTextField
+					if( fieldForInput.getText().contains(""+e.getKeyChar()) ){			// if textfield contains illegal char
+						line = fieldForInput.getText().replaceAll("[\\"+e.getKeyChar()+"]+", "");// removes all illegal chars from string
+						fieldForInput.setText(line);									// sets substring without illegal characters to jtextfield
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -17,7 +17,7 @@ public class M2 {
 	static final String QUERY_STRING = "SELECT SWL,  SAL, ELM, IWS, ELE, PUOU from Student where "
 			+ "SWL>0 and SAL>0 and ELM>0 and IWS>0 and ELE>0 and PUOU>0";
 
-	static void getRegression(String topic, String regression_key) {
+	public static void getRegression(String topic, String regression_key) {
 		REGRESSION_KEY = regression_key;
 		// load data
 		Instances data = retrieveModelInstances(QUERY_STRING + " and Topic is '"

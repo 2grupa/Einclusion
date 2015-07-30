@@ -39,7 +39,7 @@ public class ModelManager implements Serializable {
 	 * PERSISTENCE_SET choose PERSISTENCE_SET values from persistence-unit
 	 * name="..." value in persistence.xml file
 	 */
-	static void initModelManager(String persistenceSet) {
+	public static void initModelManager(String persistenceSet) {
 		ModelManager.persistenceSet = persistenceSet;
 		// String cpath = System.getProperty("java.class.path").replace(":",
 		// "\n\t");

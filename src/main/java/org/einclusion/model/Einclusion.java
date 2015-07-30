@@ -10,28 +10,8 @@ public class Einclusion {
 	private static final Logger LOG = Logger.getLogger(InstanceManager.class);
 
 	public static void main(String[] args) {
+		AppFrame gui = new AppFrame();
+		gui.setVisible(true);
 
-		try {
-			// Init DB session
-			ModelManager.initModelManager(PERSISTENCE_SET);
-
-			PrepareData.csv2db(FILE_TEST);
-
-			// Calculate M2 data
-			M2.getRegression("Video", "M2-video");
-			M2.getRegression("Robotika", "M2-robotika");
-			M2.getRegression("Mobilās tehnoloģijas", "M2-mobilas");
-
-			AppFrame gui = new AppFrame();
-			gui.setVisible(true);
-
-		} catch (Throwable t) {
-			LOG.error(t.getMessage() + " " + t.getCause());
-		}
-
-		finally {
-			// Close DB session
-			ModelManager.closeModelManager();
-		}
 	}
 }

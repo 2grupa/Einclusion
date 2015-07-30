@@ -20,7 +20,7 @@ public class AppFrame extends JFrame implements ActionListener {
 	CardLayout cardLayout = new CardLayout();
 	JPanel cardPanel;
 	JMenuBar menuBar;
-	JButton importSurvey, viewTable, m1, m2, m3;
+	JButton importSurvey, viewTable;
 	JPanel panel;
 
 	public AppFrame() {
@@ -39,22 +39,10 @@ public class AppFrame extends JFrame implements ActionListener {
 												// database
 		viewTable.setFont(new Font("Arial", Font.PLAIN, 11));
 		viewTable.addActionListener(this);
-		m1 = new JButton("m1"); // creates a button for viewing database
-		m1.setFont(new Font("Arial", Font.PLAIN, 11));
-		m1.addActionListener(this);
-		m2 = new JButton("m2"); // creates a button for viewing database
-		m2.setFont(new Font("Arial", Font.PLAIN, 11));
-		m2.addActionListener(this);
-		m3 = new JButton("m3"); // creates a button for viewing database
-		m3.setFont(new Font("Arial", Font.PLAIN, 11));
-		m3.addActionListener(this);
 
 		menuBar = new JMenuBar(); // creates a new JMenuBar with buttons
 		menuBar.add(importSurvey);
 		menuBar.add(viewTable);
-		menuBar.add(m1);
-		menuBar.add(m2);
-		menuBar.add(m3);
 		this.setJMenuBar(menuBar);
 
 		cardPanel = new JPanel(); // creates a JPanel with cardLayout (to switch

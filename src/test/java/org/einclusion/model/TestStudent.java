@@ -23,7 +23,7 @@ public class TestStudent {
 			Student student = new Student();
 
 			// Test creation of new entry
-			student.name = "Name0";
+			//student.name = name;
 			student.submitDate = date;
 			final Long id = Student.setStudent(student);
 			Student tmp = Student.getStudent(id);
@@ -79,7 +79,6 @@ public class TestStudent {
 	public static void tearDown() {
 		ModelManager.closeModelManager();
 		LOG.info("Test finished successfully");
-
-	}*/
+*/
 	}
 }
